@@ -31,6 +31,7 @@ public class Launchpad {
   static final int FADER_LENGTH = 5;
 
   static final RGBState STOP_QUEUED_COLOUR = RGBState.OFF_BLINK;
+  static final RGBState INACTIVE_COLOUR = RGBState.DARKGREY;
   static final RGBState PLAY_COLOUR = RGBState.WHITE;
   static final RGBState PLAY_QUEUED_COLOUR = RGBState.WHITE_BLINK;
   static final RGBState REC_COLOUR = RGBState.RED;
@@ -44,7 +45,6 @@ public class Launchpad {
     mMidiOut = mPadMidiOut;
 
     mMidiIn.setMidiCallback((ShortMidiMessageReceivedCallback) msg -> onMidi(msg));
-    mMidiIn.setSysexCallback((String data) -> onSysex(data));
 
     mMidiOut.sendSysex(sysExHeader + " 10 01 F7"); // set to DAW mode
     mMidiOut.sendSysex(sysExHeader + " 00 00 F7"); // set Session layout
@@ -59,32 +59,47 @@ public class Launchpad {
       updateAllLED();
     });
 
-    for (int i = 0; i < GRID_SIZE; i++) {
-      final int track = i;
-      for (int param = 0; param < 8; param++) {
-        for (int pad_param = 0; pad_param < PAD_REMOTE_CTRL.length; pad_param++) {
-          final int pad_param_f = pad_param;
-          if (param == PAD_REMOTE_CTRL[pad_param]) {
-            mRemoteControls[track].getParameter(param).value().addValueObserver(2, value -> {
-              mPadRCValue[pad_param_f][track] = value;
-              updateRemoteControlLED(track);
-            });
-          }
-        }
-      }
-    }
-
     for (int col = 0; col < GRID_SIZE; col++) {
       final int trackIdx = col;
       final Track track = mTrackBank.getItemAt(trackIdx);
       final ClipLauncherSlotBank slotBank = track.clipLauncherSlotBank();
 
+      for (int pad_param = 0; pad_param < PAD_REMOTE_CTRL.length; pad_param++) {
+        final int pad_param_f = pad_param;
+        final int rc_idx = PAD_REMOTE_CTRL[pad_param];
+        mRemoteControls[trackIdx].getParameter(rc_idx).value().addValueObserver(2, value -> {
+          final int row = GRID_SIZE - PAD_REMOTE_CTRL.length + pad_param_f;
+          if (value > 0)
+            RGBState.send(mMidiOut, posToNote(row, trackIdx), PLAY_COLOUR);
+          else
+            RGBState.send(mMidiOut, posToNote(row, trackIdx), RGBState.OFF);
+        });
+      }
+
+      track.isStopped().addValueObserver(stopped -> {
+        mHost.println("isStopped: " + stopped);
+        if (stopped)
+          RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_INACTIVE_COLOUR);
+        else
+          RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_ACTIVE_COLOUR);
+      });
+
+      track.isQueuedForStop().addValueObserver(stopQueued -> {
+        mHost.println("isQueuedForStop: " + stopQueued);
+        if (stopQueued) {
+          RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_INACTIVE_COLOUR);
+          RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_INACTIVE_QUEUED_COLOUR);
+        }
+        else
+          RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_INACTIVE_COLOUR);
+      });
+
       track.exists().addValueObserver(exists -> {
         updateAllLED();
       });
 
-      slotBank.addColorObserver((idx, red, green, blue) -> {
-        RGBState.send(mMidiOut, posToNote(idx, trackIdx), new RGBState(Color.fromRGB(red, green, blue)));
+      slotBank.addColorObserver((idx, r, g, b) -> {
+        RGBState.send(mMidiOut, posToNote(idx, trackIdx), new RGBState(Color.fromRGB(r, g, b)));
       });
 
       slotBank.addHasContentObserver((idx, hasContent) -> {
@@ -98,18 +113,26 @@ public class Launchpad {
       slotBank.addPlaybackStateObserver((idx, state, queued) -> {
         ClipLauncherSlot slot = slotBank.getItemAt(idx);
         updateClipLED(idx, trackIdx, slot, state, queued);
-
-        
       });
     }
 
     // extra 9th track controlled by the scene launch buttons (first 3 RCs)
-    for (int i = 0; i < 3; i++) {
-      final int rc = i;
-      int granularity = i == 0 ? FADER_LENGTH : 2;
-      mRemoteControls[GRID_SIZE].getParameter(rc).value().addValueObserver(granularity, value -> {
-        m9thRCValue[rc] = value;
-        updateRemoteControlLED(GRID_SIZE);
+
+    mTrackBank.getItemAt(GRID_SIZE).color().addValueObserver((r,g,b) -> {
+      updateTrackLED(GRID_SIZE);
+    });
+
+    mRemoteControls[GRID_SIZE].getParameter(0).value().addValueObserver(FADER_LENGTH, value -> {
+      RGBState track_colour = new RGBState(mTrackBank.getItemAt(GRID_SIZE).color().get());
+      for (int i = 0; i < FADER_LENGTH; i++)
+        setPadCCColour(SCENE_1_CC - i * 10, value == 4 - i ? track_colour : INACTIVE_COLOUR);
+    });
+    
+    for (int i = 1; i < 3; i++) {
+      final int idx = i;
+      mRemoteControls[GRID_SIZE].getParameter(i).value().addValueObserver(2, value -> {
+        RGBState track_colour = new RGBState(mTrackBank.getItemAt(GRID_SIZE).color().get());
+        setPadCCColour(SCENE_5_CC - 10 * idx, value > 0 ? track_colour : RGBState.OFF);
       });
     }
   }
@@ -139,19 +162,14 @@ public class Launchpad {
     RGBState.send(mMidiOut, posToNote(row, col), new RGBState(slot.color().get()));
     switch (state) {
       case 0: // stopped
-        if (queued) {
+        if (queued)
           RGBState.send(mMidiOut, posToNote(row, col), PLAY_QUEUED_COLOUR);
-          RGBState.send(mMidiOut, posToNote(NUM_SCENES, col), STOP_INACTIVE_QUEUED_COLOUR);
-        } else {
-          RGBState.send(mMidiOut, posToNote(NUM_SCENES, col), STOP_INACTIVE_COLOUR);
-        }
         break;
       case 1: // playing
         if (queued)
           RGBState.send(mMidiOut, posToNote(row, col), PLAY_QUEUED_COLOUR);
         else
           RGBState.send(mMidiOut, posToNote(row, col), PLAY_COLOUR);
-        RGBState.send(mMidiOut, posToNote(NUM_SCENES, col), STOP_ACTIVE_COLOUR);
         break;
       case 2: // recording
         if (queued)
@@ -165,23 +183,33 @@ public class Launchpad {
   private void updateRemoteControlLED(int trackIdx) {
     if (trackIdx < GRID_SIZE) {
       for (int i = 0; i < PAD_REMOTE_CTRL.length; i++) {
-        if (mPadRCValue[i][trackIdx] > 0)
-          RGBState.send(mMidiOut, posToNote(GRID_SIZE - PAD_REMOTE_CTRL.length + i, trackIdx), PLAY_COLOUR);
+        double rc_val = mRemoteControls[trackIdx].getParameter(PAD_REMOTE_CTRL[i]).value().get();
+        int row = GRID_SIZE - PAD_REMOTE_CTRL.length + i;
+        if ((int)Math.round(rc_val) > 0)
+          RGBState.send(mMidiOut, posToNote(row, trackIdx), PLAY_COLOUR);
         else
-          RGBState.send(mMidiOut, posToNote(GRID_SIZE - PAD_REMOTE_CTRL.length + i, trackIdx), RGBState.OFF);
+          RGBState.send(mMidiOut, posToNote(row, trackIdx), RGBState.OFF);
       }
     } else if (trackIdx == GRID_SIZE) {
+      RGBState track_colour = new RGBState(mTrackBank.getItemAt(trackIdx).color().get());
+      int rc_val_0 = (int)Math.round(mRemoteControls[trackIdx].getParameter(0).value().get() * 4);
+      int rc_val_1 = (int)Math.round(mRemoteControls[trackIdx].getParameter(1).value().get());
+      int rc_val_2 = (int)Math.round(mRemoteControls[trackIdx].getParameter(2).value().get());
       for (int i = 0; i < FADER_LENGTH; i++)
-        setPadCCColour(SCENE_1_CC - i * 10, m9thRCValue[0] >= 4 - i ? PLAY_COLOUR : RGBState.OFF);
+        setPadCCColour(SCENE_1_CC - i * 10, rc_val_0 == 4 - i ? track_colour : INACTIVE_COLOUR);
 
-      setPadCCColour(SCENE_6_CC, m9thRCValue[1] > 0 ? PLAY_COLOUR : RGBState.OFF);
-      setPadCCColour(SCENE_7_CC, m9thRCValue[2] > 0 ? PLAY_COLOUR : RGBState.OFF);
+      setPadCCColour(SCENE_6_CC, rc_val_1 > 0 ? track_colour : RGBState.OFF);
+      setPadCCColour(SCENE_7_CC, rc_val_2 > 0 ? track_colour : RGBState.OFF);
     }
   }
 
   private void updateAllLED() {
-    for (int i = 0; i < GRID_SIZE; i++)
+    for (int i = 0; i < NUM_TRACKS; i++)
       updateTrackLED(i);
+    setPadCCColour(UP_CC, INACTIVE_COLOUR);
+    setPadCCColour(DOWN_CC, INACTIVE_COLOUR);
+    setPadCCColour(LEFT_CC, INACTIVE_COLOUR);
+    setPadCCColour(RIGHT_CC, INACTIVE_COLOUR);
   }
 
   private void updateTrackLED(int trackIdx) {
@@ -222,11 +250,8 @@ public class Launchpad {
       track.stop();
     } else {
       int rc_idx = row + (PAD_REMOTE_CTRL.length - GRID_SIZE);
-      if (velocity == 127)
-        mPadRCValue[rc_idx][col] = 1;
-      else
-        mPadRCValue[rc_idx][col] = 0;
-      mRemoteControls[col].getParameter(PAD_REMOTE_CTRL[rc_idx]).value().set(mPadRCValue[rc_idx][col], 2);
+      int value = velocity == 127 ? 1 : 0;
+      mRemoteControls[col].getParameter(PAD_REMOTE_CTRL[rc_idx]).value().set(value, 2);
     }
   }
 
@@ -257,17 +282,15 @@ public class Launchpad {
       case SCENE_3_CC:
       case SCENE_4_CC:
       case SCENE_5_CC:
-        int rcValue = cc / 10 - 4;
-        m9thRCValue[0] = rcValue;
-        mRemoteControls[GRID_SIZE].getParameter(0).value().set(rcValue, 5);
+        mRemoteControls[GRID_SIZE].getParameter(0).value().set(cc / 10 - 4, 5);
         break;
       case SCENE_6_CC:
-        m9thRCValue[1] = m9thRCValue[1] > 0 ? 0 : 1;
-        mRemoteControls[GRID_SIZE].getParameter(1).value().set(m9thRCValue[1], 2);
+        double rc_val_1 = (int)Math.round(mRemoteControls[GRID_SIZE].getParameter(1).value().get());
+        mRemoteControls[GRID_SIZE].getParameter(1).value().set(rc_val_1 == 0 ? 1 : 0, 2);
         break;
       case SCENE_7_CC:
-        m9thRCValue[2] = m9thRCValue[2] > 0 ? 0 : 1;
-        mRemoteControls[GRID_SIZE].getParameter(2).value().set(m9thRCValue[2], 2);
+        double rc_val_2 = (int)Math.round(mRemoteControls[GRID_SIZE].getParameter(2).value().get());
+        mRemoteControls[GRID_SIZE].getParameter(2).value().set(rc_val_2 == 0 ? 1 : 0, 2);
         break;
     }
   }
@@ -297,28 +320,6 @@ public class Launchpad {
     }
   }
 
-  private void onSysex(final String data) {
-    // MMC Transport Controls:
-    if (data.equals("f07f7f0605f7"))
-      mTransport.rewind();
-    else if (data.equals("f07f7f0604f7"))
-      mTransport.fastForward();
-    else if (data.equals("f07f7f0601f7"))
-      mTransport.stop();
-    else if (data.equals("f07f7f0602f7"))
-      mTransport.play();
-    else if (data.equals("f07f7f0606f7"))
-      mTransport.record();
-  }
-
   private MidiOut mMidiOut;
   private MidiIn mMidiIn;
-
-  // remember remote control values for the RC controlled by the lower two rows of
-  // pads
-  private int[][] mPadRCValue = new int[2][GRID_SIZE];
-
-  // remember remote control values for the 4 RCs controlled by scene buttons (9th
-  // column)
-  private int[] m9thRCValue = new int[3];
 }

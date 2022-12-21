@@ -34,6 +34,7 @@ public class LaunchpadControlXLExtension extends ControllerExtension
          final Track track = mTrackBank.getItemAt(trackIdx);
          track.isStopped().markInterested();
          track.isQueuedForStop().markInterested();
+         track.color().markInterested();
          final ClipLauncherSlotBank slotBank = track.clipLauncherSlotBank();
          for (int row = 0; row < NUM_SCENES; row++) {
             ClipLauncherSlot slot = slotBank.getItemAt(row);
