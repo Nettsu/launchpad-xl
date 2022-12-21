@@ -43,6 +43,7 @@ public class Launchpad {
   public void init() {
     mMidiIn = mPadMidiIn;
     mMidiOut = mPadMidiOut;
+    mShift = false;
 
     mMidiIn.setMidiCallback((ShortMidiMessageReceivedCallback) msg -> onMidi(msg));
 
@@ -213,7 +214,13 @@ public class Launchpad {
   }
 
   private void updateTrackLED(int trackIdx) {
-    if (trackIdx < GRID_SIZE) {
+    if (trackIdx == GRID_SIZE && mShift) {
+      setPadCCColour(SCENE_8_CC, PLAY_COLOUR);
+      for (int i = SCENE_1_CC; i > SCENE_6_CC; i -= 10)
+        setPadCCColour(i, PLAY_COLOUR);
+      setPadCCColour(SCENE_6_CC, STOP_ACTIVE_COLOUR);
+    }
+    else if (trackIdx < GRID_SIZE) {
       Track track = mTrackBank.getItemAt(trackIdx);
       ClipLauncherSlotBank slotBank = track.clipLauncherSlotBank();
       for (int i = 0; i < NUM_SCENES; i++) {
@@ -237,8 +244,13 @@ public class Launchpad {
         RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_INACTIVE_COLOUR);
       else
         RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_ACTIVE_COLOUR);
+      updateRemoteControlLED(trackIdx);
+      setPadCCColour(SCENE_8_CC, RGBState.OFF);
     }
-    updateRemoteControlLED(trackIdx);
+    else {
+      updateRemoteControlLED(trackIdx);
+      setPadCCColour(SCENE_8_CC, RGBState.OFF);
+    }
   }
 
   private void processNote(int row, int col, boolean noteOn, int velocity) {
@@ -255,10 +267,21 @@ public class Launchpad {
     }
   }
 
-  private void processCC(int cc, int value) {
-    if (value == 0)
-      return;
+  private void enterShift() {
+    mShift = true;
+    updateTrackLED(GRID_SIZE);
+  }
 
+  private void exitShift() {
+    mShift = false;
+    updateTrackLED(GRID_SIZE);
+  }
+
+  private void processCC(int cc, int value) {
+    if (value == 0) {
+      if (cc == SCENE_8_CC) exitShift();
+      return;
+    }
     switch (cc) {
       case UP_CC:
         mSceneBank.scrollPageBackwards();
@@ -282,15 +305,27 @@ public class Launchpad {
       case SCENE_3_CC:
       case SCENE_4_CC:
       case SCENE_5_CC:
-        mRemoteControls[GRID_SIZE].getParameter(0).value().set(cc / 10 - 4, 5);
+        if (!mShift)
+          mRemoteControls[GRID_SIZE].getParameter(0).value().set(cc / 10 - 4, 5);
+        else
+          mSceneBank.launch(8 - cc / 10);
         break;
       case SCENE_6_CC:
-        double rc_val_1 = (int)Math.round(mRemoteControls[GRID_SIZE].getParameter(1).value().get());
-        mRemoteControls[GRID_SIZE].getParameter(1).value().set(rc_val_1 == 0 ? 1 : 0, 2);
+        if (!mShift) {
+          int rc_val_1 = (int)Math.round(mRemoteControls[GRID_SIZE].getParameter(1).value().get());
+          mRemoteControls[GRID_SIZE].getParameter(1).value().set(rc_val_1 == 0 ? 1 : 0, 2);
+        }
+        else {
+          for (int i = 0; i < NUM_TRACKS; i++)
+            mTrackBank.getItemAt(i).stop();
+        }
         break;
       case SCENE_7_CC:
-        double rc_val_2 = (int)Math.round(mRemoteControls[GRID_SIZE].getParameter(2).value().get());
+        int rc_val_2 = (int)Math.round(mRemoteControls[GRID_SIZE].getParameter(2).value().get());
         mRemoteControls[GRID_SIZE].getParameter(2).value().set(rc_val_2 == 0 ? 1 : 0, 2);
+        break;
+      case SCENE_8_CC:
+        enterShift();
         break;
     }
   }
@@ -322,4 +357,5 @@ public class Launchpad {
 
   private MidiOut mMidiOut;
   private MidiIn mMidiIn;
+  private boolean mShift;
 }

@@ -5,10 +5,11 @@ This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that 
 Launchpad part:
 - The clip launching grid is 8x5 and you can scroll it as usual using the arrow buttons.
 - Below the grid there is a dedicated STOP button for each track
-- Furhter below are two momentary switches used to control Remote Controls 3 and 4 of the first device on each track. Holding the button sets the Remote Control to 100% while releasing it resets it to 0%. Great for quick rythmic effects on each track.
+- Further below are two momentary switches used to control Remote Controls 3 and 4 of the first device on each track. Holding the button sets the Remote Control to 100% while releasing it resets it to 0%. Great for quick rythmic effects on each track.
 - Instead of scene launching the rightmost column control the 9th tracks' Remote Controls:
   + First 5 buttons work as a fader to control the first Remote Control
   + The other two control Remote Controls 2 and 3. Pressing them toggles between 0% and 100%.
+- Holding the bottom right corner button (SHIFT in this script) allows to launch scenes with the first 5 scene buttons and stop all tracks with the 6th
 
 ```
  track  track  track  track  track  track  track  track  track
@@ -58,29 +59,29 @@ Launch Control XL part:
 +------+------+------+------+------+------+------+------+------+
 |track1 track2 track3 track4 track5 track6 track7 send 1       |
 |                                                              |
-|--------------------------------------------------------      |
-|/send\ /send\ /send\ /send\ /send\ /send\ /send\ / RC \       |
-|\  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  3 /       |
-|--------------------------------------------------------      |
-|/send\ /send\ /send\ /send\ /send\ /send\ /send\ / RC \  <  > |
-|\  2 / \  2 / \  2 / \  2 / \  2 / \  2 / \  2 / \  2 /  tmpo |
-|--------------------------------------------------------      |
-|/ RC \ / RC \ / RC \ / RC \ / RC \ / RC \ / RC \ / RC \  <  > |
-|\  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 / scroll|
+|-------------------------------------------------------- _  _ |
+|/send\ /send\ /send\ /send\ /send\ /send\ /send\ / RC \ [<||>]|
+|\  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  3 /   U/F |
+|-------------------------------------------------------- _  _ |
+|/send\ /send\ /send\ /send\ /send\ /send\ /send\ / RC \ [<||>]|
+|\  2 / \  2 / \  2 / \  2 / \  2 / \  2 / \  2 / \  2 /   BPM |
+|-------------------------------------------------------- _  _ |
+|/ RC \ / RC \ / RC \ / RC \ / RC \ / RC \ / RC \ / RC \ [<||>]|
+|\  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 /   L/R |
 |                                                              |
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |------|
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  | DEVC |
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |------|
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  | MUTE |
-|volume|volume|volume|volume|volume|volume|volume|volume|------|
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  | SOLO |
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |------|
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  REC |
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |------|
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |      |
-+------+------+------+------+------+------+------+------+      |
-| SEL  | SEL  | SEL  | SEL  | SEL  | SEL  | SEL  | SEL  |      |
-+------+------+------+------+------+------+------+------+      |
-| CTRL | CTRL | CTRL | CTRL | CTRL | CTRL | CTRL | CTRL |      |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  | ____ |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[DEVC]|
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  | ____ |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[MUTE]|
+|volume|volume|volume|volume|volume|volume|volume|volume| ____ |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[SOLO]|
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  | ____ |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[REC ]|
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |   \  |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |   /  |
++------+------+------+------+------+------+------+------+   \  |
+| SEL  | SEL  | SEL  | SEL  | SEL  | SEL  | SEL  | SEL  |   /  |
++------+------+------+------+------+------+------+------+   \  |
+| CTRL | CTRL | CTRL | CTRL | CTRL | CTRL | CTRL | CTRL | <~+  |
 +------+------+------+------+------+------+------+------+------+
 ```
