@@ -30,7 +30,7 @@ public class Launchpad {
 
   static final int FADER_LENGTH = 5;
 
-  static final RGBState STOP_QUEUED_COLOUR = RGBState.OFF_BLINK;
+  static final RGBState STOP_QUEUED_COLOUR = RGBState.WHITE_PULSE;
   static final RGBState INACTIVE_COLOUR = RGBState.DARKGREY;
   static final RGBState PLAY_COLOUR = RGBState.WHITE;
   static final RGBState PLAY_QUEUED_COLOUR = RGBState.WHITE_BLINK;
@@ -164,7 +164,7 @@ public class Launchpad {
     switch (state) {
       case 0: // stopped
         if (queued)
-          RGBState.send(mMidiOut, posToNote(row, col), PLAY_QUEUED_COLOUR);
+          RGBState.send(mMidiOut, posToNote(row, col), STOP_QUEUED_COLOUR);
         break;
       case 1: // playing
         if (queued)

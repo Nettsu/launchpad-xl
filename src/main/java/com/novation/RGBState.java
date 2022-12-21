@@ -14,6 +14,7 @@ public class RGBState extends InternalHardwareLightState {
    public static final RGBState GREY = new RGBState(2);
    public static final RGBState WHITE = new RGBState(3);
    public static final RGBState WHITE_BLINK = new RGBState(3, 1);
+   public static final RGBState WHITE_PULSE = new RGBState(3, 2);
    public static final RGBState DARKRED = new RGBState(121);
    public static final RGBState DARKRED_BLINK = new RGBState(121, 1);
    public static final RGBState BLUE = new RGBState(79);
@@ -95,7 +96,6 @@ public class RGBState extends InternalHardwareLightState {
    }
 
 
-
    private String[] RGB_HEX_COLOR_TABLE = {
       "000000",
       "1e1e1e",
@@ -109,16 +109,16 @@ public class RGBState extends InternalHardwareLightState {
       "ff5400",
       "591d00",
       "271b00",
-      "ffff4c",
-      "ffff00",
+      "FFEEA1",
+      "FFFF61",
       "595900",
       "191900",
-      "88ff4c",
+      "DCFEA0",
       "54ff00",
-      "1d5900",
+      "A1DD61",
       "142b00",
       "4cff4c",
-      "00ff00",
+      "61FF61",
       "005900",
       "001900",
       "4cff5e",
@@ -129,21 +129,21 @@ public class RGBState extends InternalHardwareLightState {
       "00ff55",
       "EEFC61",
       "001f12",
-      "4cffb7",
-      "00ff99",
-      "005935",
-      "001912",
-      "4cc3ff",
+      "4dfeff",
+      "61FFE9",
+      "61DDC2",
+      "61B396",
+      "C2F3FF",
       "61EEFF",
-      "004152",
-      "001019",
-      "4c88ff",
-      "0055ff",
-      "001d59",
-      "000819",
+      "61C7DD",
+      "61A1B3",
+      "C2DDFF",
+      "61C7FF",
+      "61A1DD",
+      "6181B3",
       "4c4cff",
       "0000ff",
-      "000059",
+      "1953ff",
       "000019",
       "874cff",
       "5400ff",
@@ -157,7 +157,7 @@ public class RGBState extends InternalHardwareLightState {
       "ff0054",
       "59001d",
       "220013",
-      "ff1500",
+      "FF7661",
       "993500",
       "795100",
       "436400",
@@ -207,7 +207,7 @@ public class RGBState extends InternalHardwareLightState {
       "F9B3A1",
       "d86a1c",
       "FFF38C",
-      "9ee12f",
+      "E9F9A1",
       "67b50f",
       "1e1e30",
       "dcff6b",
