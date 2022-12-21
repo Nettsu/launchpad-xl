@@ -2,6 +2,7 @@
 
 This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that targets my very specific needs.
 
+Launchpad part:
 - The clip launching grid is 8x5 and you can scroll it as usual using the arrow buttons.
 - Below the grid there is a dedicated STOP button for each track
 - Furhter below are two momentary switches used to control Remote Controls 3 and 4 of the first device on each track. Holding the button sets the Remote Control to 100% while releasing it resets it to 0%. Great for quick rythmic effects on each track.
@@ -13,7 +14,7 @@ This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that 
  track  track  track  track  track  track  track  track  track
    1      2      3      4      5      6      7      8      9
 +------+------+------+------+------+------+------+------+------+
-| up   | down | left |right |sessio|drums | keys | user |      |
+|  up  | down | left | rght | sess | drum | keys | user |      |
 |      |      |      |      |      |      |      |      |      |
 +------+------+------+------+------+------+------+------+------+
 | play | play | play | play | play | play | play | play | RC 1 |
@@ -37,7 +38,49 @@ This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that 
 | RC 3 | RC 3 | RC 3 | RC 3 | RC 3 | RC 3 | RC 3 | RC 3 | RC 3 |
 | hold | hold | hold | hold | hold | hold | hold | hold |toggle|
 +------+------+------+------+------+------+------+------+------+
-| RC 4 | RC 4 | RC 4 | RC 4 | RC 4 | RC 4 | RC 4 | RC 4 |shift |
+| RC 4 | RC 4 | RC 4 | RC 4 | RC 4 | RC 4 | RC 4 | RC 4 | SHFT |
 | hold | hold | hold | hold | hold | hold | hold | hold |      |
++------+------+------+------+------+------+------+------+------+
+```
+
+Launch Control XL part:
+- The first 7 columns control the tracks, following the selection of the Launchpad
+- The 8th column controls a send channel, select which channel with the left and right buttons
+- For track channels the first two knobs control the send amounts and the third one controls the first Remote Control of each track
+- For the send channel the knobs control the first three Remote Controls of the first device in the send channel chain
+- The up and down buttons control the tempo
+- The Mute, Solo, Record Arm and two rows of buttons at the bottom work as originally intended
+- Pressing the Device button toggles on the 'Device' mode. When in 'Device' mode:
+  + the third row of knobs control the eight Remote Controls of currently selected device
+  + the left and right buttons select the previous/next device in the chain
+
+```
++------+------+------+------+------+------+------+------+------+
+|track1 track2 track3 track4 track5 track6 track7 send 1       |
+|                                                              |
+|--------------------------------------------------------      |
+|/send\ /send\ /send\ /send\ /send\ /send\ /send\ / RC \       |
+|\  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  3 /       |
+|--------------------------------------------------------      |
+|/send\ /send\ /send\ /send\ /send\ /send\ /send\ / RC \  <  > |
+|\  2 / \  2 / \  2 / \  2 / \  2 / \  2 / \  2 / \  2 /  tmpo |
+|--------------------------------------------------------      |
+|/ RC \ / RC \ / RC \ / RC \ / RC \ / RC \ / RC \ / RC \  <  > |
+|\  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 / scroll|
+|                                                              |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |------|
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  | DEVC |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |------|
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  | MUTE |
+|volume|volume|volume|volume|volume|volume|volume|volume|------|
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  | SOLO |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |------|
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  REC |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |------|
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |      |
++------+------+------+------+------+------+------+------+      |
+| SEL  | SEL  | SEL  | SEL  | SEL  | SEL  | SEL  | SEL  |      |
++------+------+------+------+------+------+------+------+      |
+| CTRL | CTRL | CTRL | CTRL | CTRL | CTRL | CTRL | CTRL |      |
 +------+------+------+------+------+------+------+------+------+
 ```
