@@ -18,6 +18,10 @@ public class LaunchpadControlXLExtension extends ControllerExtension
       mTransport = mHost.createTransport();
       mTrackBank = mHost.createTrackBank(NUM_TRACKS, 8, NUM_SCENES);
       mSceneBank = mTrackBank.sceneBank();
+      mSendBank = mHost.createEffectTrackBank(1, NUM_SCENES);
+
+      mTrackBank.setShouldShowClipLauncherFeedback(true);
+      mSendBank.setShouldShowClipLauncherFeedback(true);
 
       mPadMidiIn = mHost.getMidiInPort(0);
       mPadMidiOut = mHost.getMidiOutPort(0);
@@ -50,15 +54,18 @@ public class LaunchpadControlXLExtension extends ControllerExtension
          }
       }
 
-      launchpad = new Launchpad();
-      launchpad.init();
+      mLaunchpad = new Launchpad();
+      mLaunchpad.init();
+
+      mLaunchControl = new LaunchControlXL();
+      mLaunchControl.init();
 
       mHost.showPopupNotification("Launchpad Control XL Initialized");
    }
 
    @Override
    public void exit() {
-      launchpad.exit();
+      mLaunchpad.exit();
       mHost.showPopupNotification("Launchpad Control XL Exited");
    }
 
@@ -66,7 +73,8 @@ public class LaunchpadControlXLExtension extends ControllerExtension
    public void flush() {
    }
 
-   public static Launchpad launchpad;
+   public static Launchpad mLaunchpad;
+   public static LaunchControlXL mLaunchControl;
 
    public static ControllerHost mHost;
    public static Transport mTransport;
@@ -79,6 +87,7 @@ public class LaunchpadControlXLExtension extends ControllerExtension
 
    public static TrackBank mTrackBank;
    public static SceneBank mSceneBank;
+   public static TrackBank mSendBank;
    
    // private CursorTrack mCursorTrack;
    // private DeviceBank mDeviceBank;
@@ -86,4 +95,6 @@ public class LaunchpadControlXLExtension extends ControllerExtension
    
    public static CursorRemoteControlsPage[] mRemoteControls;
    public static CursorDevice[] mCursorDevices;
+
+   public static boolean mShift;
 }

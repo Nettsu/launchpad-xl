@@ -36,9 +36,9 @@ public class Launchpad {
   static final RGBState PLAY_QUEUED_COLOUR = RGBState.WHITE_BLINK;
   static final RGBState REC_COLOUR = RGBState.RED;
   static final RGBState REC_QUEUED_COLOUR = RGBState.RED_BLINK;
-  static final RGBState STOP_ACTIVE_COLOUR = RGBState.DARKRED;
-  static final RGBState STOP_INACTIVE_COLOUR = new RGBState(71);
-  static final RGBState STOP_INACTIVE_QUEUED_COLOUR = RGBState.DARKRED_BLINK;
+  static final RGBState STOP_ACTIVE_COLOUR = RGBState.DARKGREY;
+  static final RGBState STOP_INACTIVE_COLOUR = RGBState.OFF;
+  static final RGBState STOP_INACTIVE_QUEUED_COLOUR = RGBState.DARKGREY_BLINK;
 
   public void init() {
     mMidiIn = mPadMidiIn;
@@ -49,8 +49,6 @@ public class Launchpad {
 
     mMidiOut.sendSysex(sysExHeader + " 10 01 F7"); // set to DAW mode
     mMidiOut.sendSysex(sysExHeader + " 00 00 F7"); // set Session layout
-
-    mTrackBank.setShouldShowClipLauncherFeedback(true);
 
     mSceneBank.scrollPosition().addValueObserver(value -> {
       updateAllLED();
@@ -285,11 +283,15 @@ public class Launchpad {
     switch (cc) {
       case UP_CC:
         mSceneBank.scrollPageBackwards();
+        mSendBank.sceneBank().scrollPageBackwards();
         mSceneBank.getItemAt(NUM_SCENES - 1).showInEditor();
+        mSceneBank.getItemAt(0).showInEditor();
         break;
       case DOWN_CC:
         mSceneBank.scrollPageForwards();
+        mSendBank.sceneBank().scrollPageForwards();
         mSceneBank.getItemAt(0).showInEditor();
+        mSceneBank.getItemAt(NUM_SCENES - 1).showInEditor();
         break;
       case LEFT_CC:
         mTrackBank.scrollBackwards();
@@ -357,5 +359,4 @@ public class Launchpad {
 
   private MidiOut mMidiOut;
   private MidiIn mMidiIn;
-  private boolean mShift;
 }

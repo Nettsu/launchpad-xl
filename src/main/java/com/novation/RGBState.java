@@ -11,12 +11,13 @@ public class RGBState extends InternalHardwareLightState {
    public static final RGBState OFF = new RGBState(0);
    public static final RGBState OFF_BLINK = new RGBState(0, 1);
    public static final RGBState DARKGREY = new RGBState(1);
+   public static final RGBState DARKGREY_BLINK = new RGBState(1, 1);
    public static final RGBState GREY = new RGBState(2);
    public static final RGBState WHITE = new RGBState(3);
    public static final RGBState WHITE_BLINK = new RGBState(3, 1);
    public static final RGBState WHITE_PULSE = new RGBState(3, 2);
-   public static final RGBState DARKRED = new RGBState(121);
-   public static final RGBState DARKRED_BLINK = new RGBState(121, 1);
+   public static final RGBState DARKRED = new RGBState(7);
+   public static final RGBState DARKRED_BLINK = new RGBState(7, 1);
    public static final RGBState BLUE = new RGBState(79);
    public static final RGBState YELLOW = new RGBState(13);
    public static final RGBState YELLOW_BLINK = new RGBState(13, 1);
@@ -27,7 +28,6 @@ public class RGBState extends InternalHardwareLightState {
    public static final RGBState RED = new RGBState(72);
    public static final RGBState RED_PULS = new RGBState(72, 2);
    public static final RGBState RED_BLINK = new RGBState(5, 1); // 72 instead of 5
-   public static final RGBState TRACK_ARM = new RGBState(121);
    public static final RGBState GREEN = new RGBState(122);
    public static final RGBState GREEN_PULS = new RGBState(21, 2);
    public static final RGBState GREEN_BLINK = new RGBState(21, 1);
@@ -133,7 +133,7 @@ public class RGBState extends InternalHardwareLightState {
       "61FFE9",
       "61DDC2",
       "61B396",
-      "C2F3FF",
+      "5ad9ff",
       "61EEFF",
       "61C7DD",
       "61A1B3",
@@ -142,8 +142,8 @@ public class RGBState extends InternalHardwareLightState {
       "61A1DD",
       "6181B3",
       "4c4cff",
-      "0000ff",
       "1953ff",
+      "153dbc",
       "000019",
       "874cff",
       "5400ff",
