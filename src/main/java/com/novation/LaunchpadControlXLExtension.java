@@ -34,7 +34,8 @@ public class LaunchpadControlXLExtension extends ControllerExtension
 
       for (int col = 0; col < NUM_TRACKS; col++) {
          mCursorDevices[col] = mTrackBank.getItemAt(col).createCursorDevice("CursorDevice" + col);
-         mRemoteControls[col] = mCursorDevices[col].createCursorRemoteControlsPage("RemoteControls" + col, 8, "");
+         // mRemoteControls[col] = mCursorDevices[col].createCursorRemoteControlsPage("RemoteControls" + col, 8, "");
+         mRemoteControls[col] = mCursorDevices[col].createCursorRemoteControlsPage(8);
 
          final int trackIdx = col;
          final Track track = mTrackBank.getItemAt(trackIdx);

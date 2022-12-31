@@ -36,12 +36,12 @@ public class RGBState extends InternalHardwareLightState {
 
    public RGBState(int n) {
       mNumber = n;
-      mColor = Color.fromHex(RGB_HEX_COLOR_TABLE[n]);
+      mColor = Color.fromHex((String)RGB_HEX_COLOR_TABLE[n][1]);
    }
 
    public RGBState(int n, int t) {
       mNumber = n;
-      mColor = Color.fromHex(RGB_HEX_COLOR_TABLE[n]);
+      mColor = Color.fromHex((String)RGB_HEX_COLOR_TABLE[n][1]);
       mType = t;
    }
 
@@ -50,8 +50,8 @@ public class RGBState extends InternalHardwareLightState {
       int best = 0;
       double err;
       for (int i = 0; i < 128; i++) {
-         //err = computeHsvError(c, Color.fromHex(RGB_HEX_COLOR_TABLE[i]));
-         err = RGBError(c, Color.fromHex(RGB_HEX_COLOR_TABLE[i]));
+         // err = computeHsvError(c, Color.fromHex(RGB_HEX_COLOR_TABLE[i][1]));
+         err = RGBError(c, Color.fromHex((String)RGB_HEX_COLOR_TABLE[i][1]));
          if (err < bestErr) {
             best = i;
             bestErr = err;
@@ -60,7 +60,7 @@ public class RGBState extends InternalHardwareLightState {
       mNumber = best;
       mHost.println("best: " + best);
       mHost.println("input: " + c.toHex());
-      mHost.println("chosen hex: " + Color.fromHex(RGB_HEX_COLOR_TABLE[best]).toHex());
+      mHost.println("chosen hex: " + Color.fromHex((String)RGB_HEX_COLOR_TABLE[best][1]).toHex());
 
       //mColor = Color.fromHex(Integer.toHexString(RGB_COLOR_TABLE[best][1]));
       mColor = c; // When sending via Sysex
@@ -71,14 +71,15 @@ public class RGBState extends InternalHardwareLightState {
       int best = 0;
       double err;
       for (int i = 0; i < 128; i++) {
-         err = RGBError(c, Color.fromHex(RGB_HEX_COLOR_TABLE[i]));
+         // err = computeHsvError(c, Color.fromHex(RGB_HEX_COLOR_TABLE[i][1]));
+         err = RGBError(c, Color.fromHex((String)RGB_HEX_COLOR_TABLE[i][1]));
          if (err < bestErr) {
             best = i;
             bestErr = err;
          }
       }
       mNumber = best;
-      mColor = Color.fromHex(RGB_HEX_COLOR_TABLE[best]);
+      mColor = Color.fromHex((String)RGB_HEX_COLOR_TABLE[best][1]);
       mType = t;
    }
 
@@ -95,136 +96,135 @@ public class RGBState extends InternalHardwareLightState {
       return mColor;
    }
 
-
-   private String[] RGB_HEX_COLOR_TABLE = {
-      "000000",
-      "1e1e1e",
-      "7f7f7f",
-      "ffffff",
-      "ff4c4c",
-      "ff0000",
-      "590000",
-      "190000",
-      "FFF3D5",
-      "ff5400",
-      "591d00",
-      "271b00",
-      "FFEEA1",
-      "FFFF61",
-      "595900",
-      "191900",
-      "DCFEA0",
-      "54ff00",
-      "A1DD61",
-      "142b00",
-      "4cff4c",
-      "61FF61",
-      "005900",
-      "001900",
-      "4cff5e",
-      "00ff19",
-      "00590d",
-      "001902",
-      "4cff88",
-      "00ff55",
-      "EEFC61",
-      "001f12",
-      "4dfeff",
-      "61FFE9",
-      "61DDC2",
-      "61B396",
-      "5ad9ff",
-      "61EEFF",
-      "61C7DD",
-      "61A1B3",
-      "C2DDFF",
-      "61C7FF",
-      "61A1DD",
-      "6181B3",
-      "4c4cff",
-      "1953ff",
-      "153dbc",
-      "000019",
-      "874cff",
-      "5400ff",
-      "190064",
-      "0f0030",
-      "ff4cff",
-      "ff00ff",
-      "590059",
-      "190019",
-      "ff4c87",
-      "ff0054",
-      "59001d",
-      "220013",
-      "FF7661",
-      "993500",
-      "795100",
-      "436400",
-      "033900",
-      "005735",
-      "618CD5",
-      "0000ff",
-      "00454f",
-      "2500cc",
-      "7f7f7f",
-      "202020",
-      "ff0000",
-      "bdff2d",
-      "afed06",
-      "64ff09",
-      "108b00",
-      "00ff87",
-      "00a9ff",
-      "002aff",
-      "3f00ff",
-      "7a00ff",
-      "b21a7d",
-      "402100",
-      "ff4a00",
-      "88e106",
-      "72ff15",
-      "00ff00",
-      "3bff26",
-      "59ff71",
-      "38ffcc",
-      "5b8aff",
-      "A1C2F6",
-      "877fe9",
-      "d31dff",
-      "ff005d",
-      "ff7f00",
-      "b9b000",
-      "90ff00",
-      "835d07",
-      "392b00",
-      "144c10",
-      "0d5038",
-      "15152a",
-      "16205a",
-      "693c1c",
-      "a8000a",
-      "F9B3A1",
-      "d86a1c",
-      "FFF38C",
-      "E9F9A1",
-      "67b50f",
-      "1e1e30",
-      "dcff6b",
-      "80ffbd",
-      "9a99ff",
-      "8e66ff",
-      "404040",
-      "757575",
-      "e0ffff",
-      "a00000",
-      "350000",
-      "1ad000",
-      "074200",
-      "b9b000",
-      "3f3100",
-      "b35f00",
-      "4b1502"      
+   private Object[][] RGB_HEX_COLOR_TABLE = {
+      {0, "000000"},
+      {1, "1e1e1e"},
+      {2, "7f7f7f"},
+      {3, "ffffff"},
+      {4, "ff4c4c"},
+      {5, "ff0000"},
+      {6, "590000"},
+      {7, "190000"},
+      {8, "FFF3D5"},
+      {9, "ff5400"},
+      {10, "591d00"},
+      {11, "271b00"},
+      {12, "FFEEA1"},
+      {13, "FFFF61"},
+      {14, "595900"},
+      {15, "191900"},
+      {16, "DCFEA0"},
+      {17, "54ff00"},
+      {18, "A1DD61"},
+      {19, "142b00"},
+      {20, "4cff4c"},
+      {21, "61FF61"},
+      {22, "005900"},
+      {23, "001900"},
+      {24, "4cff5e"},
+      {25, "00ff19"},
+      {26, "00590d"},
+      {27, "001902"},
+      {28, "4cff88"},
+      {29, "00ff55"},
+      {30, "EEFC61"},
+      {31, "001f12"},
+      {32, "6ffeff"},
+      {33, "4dfeff"},
+      {34, "42bbbc"},
+      {35, "61B396"},
+      {36, "C2F3FF"},
+      {37, "5ad9ff"},
+      {38, "33c6ff"},
+      {39, "2c91bc"},
+      {40, "C2DDFF"},
+      {41, "45affc"},
+      {42, "1988f9"},
+      {43, "1564b7"},
+      {44, "4c4cff"},
+      {45, "1953ff"},
+      {46, "153dbc"},
+      {0, "6161B3"},
+      {0, "874cff"},
+      {0, "5400ff"},
+      {0, "190064"},
+      {0, "0f0030"},
+      {0, "ff4cff"},
+      {0, "ff00ff"},
+      {0, "590059"},
+      {0, "190019"},
+      {0, "ff4c87"},
+      {0, "ff0054"},
+      {0, "59001d"},
+      {0, "220013"},
+      {0, "FF7661"},
+      {0, "993500"},
+      {0, "795100"},
+      {0, "436400"},
+      {0, "033900"},
+      {0, "005735"},
+      {0, "458bff"},
+      {0, "0000ff"},
+      {0, "00454f"},
+      {0, "2500cc"},
+      {0, "7f7f7f"},
+      {0, "202020"},
+      {0, "ff0000"},
+      {0, "bdff2d"},
+      {0, "afed06"},
+      {0, "64ff09"},
+      {0, "108b00"},
+      {0, "00ff87"},
+      {0, "61E9FF"},
+      {0, "002aff"},
+      {0, "3f00ff"},
+      {0, "7a00ff"},
+      {0, "b21a7d"},
+      {0, "402100"},
+      {0, "ff4a00"},
+      {0, "88e106"},
+      {0, "72ff15"},
+      {0, "00ff00"},
+      {0, "3bff26"},
+      {0, "59ff71"},
+      {0, "38ffcc"},
+      {0, "CCE4FF"},
+      {0, "A1C2F6"},
+      {0, "877fe9"},
+      {0, "d31dff"},
+      {0, "ff005d"},
+      {0, "ff7f00"},
+      {0, "b9b000"},
+      {0, "90ff00"},
+      {0, "835d07"},
+      {0, "392b00"},
+      {0, "144c10"},
+      {0, "0d5038"},
+      {0, "15152a"},
+      {0, "16205a"},
+      {0, "693c1c"},
+      {0, "a8000a"},
+      {0, "F9B3A1"},
+      {0, "d86a1c"},
+      {0, "FFF38C"},
+      {0, "E9F9A1"},
+      {0, "67b50f"},
+      {0, "1e1e30"},
+      {0, "dcff6b"},
+      {0, "80ffbd"},
+      {0, "9a99ff"},
+      {0, "8e66ff"},
+      {0, "404040"},
+      {0, "757575"},
+      {0, "e0ffff"},
+      {0, "a00000"},
+      {0, "350000"},
+      {0, "1ad000"},
+      {0, "074200"},
+      {0, "b9b000"},
+      {0, "3f3100"},
+      {0, "b35f00"},
+      {0, "4b1502"}   
    };
 
    public int getType() {
@@ -257,40 +257,6 @@ public class RGBState extends InternalHardwareLightState {
    private int mNumber;
    private Color mColor;
    private int mType = 0;
-   private int[][] RGB_COLOR_TABLE = {
-         { 0, 0 },          { 1, 1973790 },    { 2, 8355711 },    { 3, 16777215 }, 
-         { 4, 16731212 },   { 5, 16711680 },   { 6, 5832704 },    { 7, 1638400 },
-         { 8, 16760172 },   { 9, 16733184 },   { 10, 5840128 },   { 11, 2562816 },
-         { 12, 16777036 },  { 13, 16776960 },  { 14, 5855488 },   { 15, 1644800 },
-         { 16, 8978252 },   { 17, 5570304 },   { 18, 1923328 },   { 19, 1321728 },
-         { 20, 5046092 },   { 21, 65280 },     { 22, 22784 },     { 23, 6400 },
-         { 24, 5046110 },   { 25, 65305 },     { 26, 22797 },     { 27, 6402 },
-         { 28, 5046152 },   { 29, 65365 },     { 30, 22813 },     { 31, 7954 },
-         { 32, 5046199 },   { 33, 65433 },     { 34, 22837 },     { 35, 6418 },
-         { 36, 5030911 },   { 37, 43519 },     { 38, 16722 },     { 39, 4121 },
-         { 40, 5015807 },   { 41, 22015 },     { 42, 7513 },      { 43, 2073 },
-         { 44, 5000447 },   { 45, 255 },       { 46, 89 },        { 47, 25 },
-         { 48, 8867071 },   { 49, 5505279 },   { 50, 1638500 },   { 51, 983088 },
-         { 52, 16731391 },  { 53, 16711935 },  { 54, 5832793 },   { 55, 1638425 },
-         { 56, 16731271 },  { 57, 16711764 },  { 58, 5832733 },   { 59, 2228243 },
-         { 60, 16717056 },  { 61, 10040576 },  { 62, 7950592 },   { 63, 4416512 },
-         { 64, 211200 },    { 65, 22325 },     { 66, 21631 },     { 67, 255 },
-         { 68, 17743 },     { 69, 2425036 },   { 70, 8355711 },   { 71, 2105376 },
-         { 72, 16711680 },  { 73, 12451629 },  { 74, 11529478 },  { 75, 6618889 },
-         { 76, 1084160 },   { 77, 65415 },     { 78, 43519 },     { 79, 11007 },
-         { 80, 4129023 },   { 81, 7995647 },   { 82, 11672189 },  { 83, 4202752 },
-         { 84, 16730624 },  { 85, 8970502 },   { 86, 7536405 },   { 87, 65280 },
-         { 88, 3931942 },   { 89, 5898097 },   { 90, 3735500 },   { 91, 5999359 },
-         { 92, 3232198 },   { 93, 8880105 },   { 94, 13835775 },  { 95, 16711773 },
-         { 96, 16744192 },  { 97, 12169216 },  { 98, 9502464 },   { 99, 8609031 },
-         { 100, 3746560 },  { 101, 1330192 },  { 102, 872504 },   { 103, 1381674 },
-         { 104, 1450074 },  { 105, 6896668 },  { 106, 11010058 }, { 107, 14569789 },
-         { 108, 14182940 }, { 109, 16769318 }, { 110, 10412335 }, { 111, 6796559 },
-         { 112, 1973808 },  { 113, 14483307 }, { 114, 8454077 },  { 115, 10131967 },
-         { 116, 9332479 },  { 117, 4210752 },  { 118, 7697781 },  { 119, 14745599 },
-         { 120, 10485760 }, { 121, 3473408 },  { 122, 1757184 },  { 123, 475648 },
-         { 124, 12169216 }, { 125, 4141312 },  { 126, 11755264 }, { 127, 4920578 }
-   };
 
    public static void RGBtoHSV(final double r, final double g, final double b, final double[] hsv) {
       assert r >= 0 && r <= 1;
