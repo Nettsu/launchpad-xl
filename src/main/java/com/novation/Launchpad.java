@@ -216,7 +216,7 @@ public class Launchpad {
       setPadCCColour(SCENE_8_CC, PLAY_COLOUR);
       for (int i = SCENE_1_CC; i > SCENE_6_CC; i -= 10)
         setPadCCColour(i, PLAY_COLOUR);
-      setPadCCColour(SCENE_6_CC, STOP_ACTIVE_COLOUR);
+      setPadCCColour(SCENE_6_CC, REC_COLOUR);
     }
     else if (trackIdx < GRID_SIZE) {
       Track track = mTrackBank.getItemAt(trackIdx);
@@ -260,8 +260,15 @@ public class Launchpad {
       track.stop();
     } else {
       int rc_idx = row + (PAD_REMOTE_CTRL.length - GRID_SIZE);
-      int value = velocity == 127 ? 1 : 0;
-      mRemoteControls[col].getParameter(PAD_REMOTE_CTRL[rc_idx]).value().set(value, 2);
+      int rc_num = PAD_REMOTE_CTRL[rc_idx];
+      if (mShift && velocity == 127) {
+        int rc_val = (int)Math.round(mRemoteControls[col].getParameter(rc_num).value().get());
+        mRemoteControls[col].getParameter(rc_num).value().set(rc_val == 0 ? 1 : 0, 2);
+      }
+      else if (!mShift) {
+        int value = velocity == 127 ? 1 : 0;
+        mRemoteControls[col].getParameter(rc_num).value().set(value, 2);
+      }
     }
   }
 

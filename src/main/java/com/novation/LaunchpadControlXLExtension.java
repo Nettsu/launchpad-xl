@@ -26,11 +26,13 @@ public class LaunchpadControlXLExtension extends ControllerExtension
       mPadMidiIn = mHost.getMidiInPort(0);
       mPadMidiOut = mHost.getMidiOutPort(0);
 
-      // mControlMidiIn = mHost.getMidiInPort(1);
-      // mControlMidiOut = mHost.getMidiOutPort(1);
+      mControlMidiIn = mHost.getMidiInPort(1);
+      mControlMidiOut = mHost.getMidiOutPort(1);
 
       mRemoteControls = new CursorRemoteControlsPage[NUM_TRACKS];
       mCursorDevices = new CursorDevice[NUM_TRACKS];
+      mSelectedRemoteControls = mHost.createCursorTrack(3, NUM_SCENES).createCursorDevice().createCursorRemoteControlsPage(8);
+      mSendRemoteControls = mSendBank.getItemAt(0).createCursorDevice("SendDevice").createCursorRemoteControlsPage(8);
 
       for (int col = 0; col < NUM_TRACKS; col++) {
          mCursorDevices[col] = mTrackBank.getItemAt(col).createCursorDevice("CursorDevice" + col);
@@ -83,19 +85,17 @@ public class LaunchpadControlXLExtension extends ControllerExtension
    public static MidiOut mPadMidiOut;
    public static MidiIn mPadMidiIn;
 
-   // private MidiOut mControlMidiOut;
-   // private MidiIn mControlMidiIn;
+   public static MidiOut mControlMidiOut;
+   public static MidiIn mControlMidiIn;
 
    public static TrackBank mTrackBank;
    public static SceneBank mSceneBank;
    public static TrackBank mSendBank;
    
-   // private CursorTrack mCursorTrack;
-   // private DeviceBank mDeviceBank;
-   // private CursorDevice mCursorDevice;
-   
    public static CursorRemoteControlsPage[] mRemoteControls;
    public static CursorDevice[] mCursorDevices;
+   public static CursorRemoteControlsPage mSelectedRemoteControls;
+   public static CursorRemoteControlsPage mSendRemoteControls;
 
    public static boolean mShift;
 }

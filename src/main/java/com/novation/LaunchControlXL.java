@@ -3,7 +3,6 @@ package com.novation;
 import com.bitwig.extension.api.util.midi.ShortMidiMessage;
 import com.bitwig.extension.callback.ShortMidiMessageReceivedCallback;
 import com.bitwig.extension.controller.api.*;
-import com.bitwig.extension.api.Color;
 
 import static com.novation.LaunchpadControlXLExtension.*;
 
@@ -33,6 +32,20 @@ public class LaunchControlXL {
   static final int ARM_COLOUR = XL_COLOUR_RED;
   static final int SELECT_COLOUR = XL_COLOUR_YELLOW;
 
+  static final int[][] COLOR_GRADIENT = {
+  // R, G
+    {0, 0},
+    {0, 1},
+    {0, 2},
+    {0, 3},
+    {1, 3},
+    {2, 3},
+    {3, 3},
+    {3, 2},
+    {3, 1},
+    {3, 0},
+  };
+
   public enum TrackControl {
     SOLO,
     MUTE,
@@ -40,22 +53,32 @@ public class LaunchControlXL {
   }
 
   public void init() {
+    mMidiIn = mControlMidiIn;
+    mMidiOut = mControlMidiOut;
+    mMidiIn.setMidiCallback((ShortMidiMessageReceivedCallback) msg -> onMidi(msg));
+    
     mTrackCtrl = TrackControl.MUTE;
     setCCColour(MUTE_CC, SELECT_COLOUR);
     mDeviceMode = false;
-    //mMidiIn.setMidiCallback((ShortMidiMessageReceivedCallback) msg -> onMidi(msg));
-    
+
     for (int i = 0; i < NUM_TRACKS; i++) {
       final int trackIdx = i;
+
       mTrackBank.getItemAt(i).solo().addValueObserver(solo -> {
-        setPadColour(1, trackIdx, solo ? SOLO_COLOUR : XL_COLOUR_OFF);
+        if (mTrackCtrl == TrackControl.SOLO)
+          setPadColour(1, trackIdx, solo ? SOLO_COLOUR : XL_COLOUR_OFF);
       });
+
       mTrackBank.getItemAt(i).mute().addValueObserver(mute -> {
-        setPadColour(1, trackIdx, mute ? MUTE_COLOUR : XL_COLOUR_OFF);
+        if (mTrackCtrl == TrackControl.MUTE)
+          setPadColour(1, trackIdx, mute ? MUTE_COLOUR : XL_COLOUR_OFF);
       });
+
       mTrackBank.getItemAt(i).arm().addValueObserver(arm -> {
-        setPadColour(1, trackIdx, arm ? ARM_COLOUR : XL_COLOUR_OFF);
+        if (mTrackCtrl == TrackControl.ARM)
+          setPadColour(1, trackIdx, arm ? ARM_COLOUR : XL_COLOUR_OFF);
       });
+
       mTrackBank.getItemAt(i).addIsSelectedInMixerObserver(selected -> {
         setPadColour(0, trackIdx, selected ? SELECT_COLOUR : XL_COLOUR_OFF);
       });
@@ -66,18 +89,20 @@ public class LaunchControlXL {
   }
 
   private void setPadColour(int row, int col, int colour) {
-
+    // TODO
   }
 
   private void setCCColour(int cc, int colour) {
-
+    mMidiOut.sendMidi(176, cc, colour);
   }
 
   private int msgToRow(ShortMidiMessage msg) {
+    // TODO
     return 0;
   }
 
   private int msgToCol(ShortMidiMessage msg) {
+    // TODO
     return 0;
   }
 
@@ -139,68 +164,90 @@ public class LaunchControlXL {
     return 0;
   }
 
-  private void processCC(int cc, int value) {
-    if (isAnalogCC(cc)) {
-      int row = rowFromCC(cc);
-      int col = colFromCC(cc);
-      Track track;
-      boolean is_send = col == 7;
+  private void processContinious(int cc, int value) {
+    int row = rowFromCC(cc);
+    int col = colFromCC(cc);
 
-      if (is_send) track = mSendBank.getItemAt(0);
-      else         track = mTrackBank.getItemAt(col);
-        
+    if (row == 2 && mDeviceMode) {
+      mSelectedRemoteControls.getParameter(col).set(value, 128);
+    }
+    else if (col == 7) {
       switch (row) {
         case 0:
-          if (is_send) mRemoteControls[col].getParameter(2).set(value, 128);
-          else track.sendBank().getItemAt(row).set(value, 128);
+          mSendRemoteControls.getParameter(2).set(value, 128);
           break;
         case 1:
-          if (is_send) mRemoteControls[col].getParameter(1).set(value, 128);
-          else track.sendBank().getItemAt(row).set(value, 128);
+          mSendRemoteControls.getParameter(1).set(value, 128);
+          break;
+        case 2:
+          mSendRemoteControls.getParameter(0).set(value, 128);
+          break;
+        case 3:
+          mSendBank.getItemAt(0).volume().set(value, 128);
+          break;
+      }
+    }
+    else {
+      switch (row) {
+        case 0:
+          mTrackBank.getItemAt(col).sendBank().getItemAt(row).set(value, 128);
+          break;
+        case 1:
+          mTrackBank.getItemAt(col).sendBank().getItemAt(row).set(value, 128);
           break;
         case 2:
           mRemoteControls[col].getParameter(0).set(value, 128);
           break;
         case 3:
-          track.volume().set(value, 128);
+          mTrackBank.getItemAt(col).volume().set(value, 128);
           break;
       }
     }
-    else if (value == 127) {
-      switch (cc) {
-        case UP_CC:
-          mTransport.tempo().incRaw(1);
-          break;
-        case DOWN_CC:
-          mTransport.tempo().incRaw(-1);
-          break;
-        case LEFT_CC:
-          mSendBank.scrollBackwards();
-          break;
-        case RIGHT_CC:
-          mSendBank.scrollForwards();
-          break;
-        case SOLO_CC:
-          mTrackCtrl = TrackControl.SOLO;
-          updateSideButtons();
-          updatePads();
-          break;
-        case MUTE_CC:
-          mTrackCtrl = TrackControl.MUTE;
-          updateSideButtons();
-          updatePads();
-          break;
-        case ARM_CC:
-          mTrackCtrl = TrackControl.ARM;
-          updateSideButtons();
-          updatePads();
-          break;
-        case DEV_CC:
-          mDeviceMode = !mDeviceMode;
-          updateSideButtons();
-          break;
-      }
+  }
+
+  private void processButton(int cc, int value) {
+    switch (cc) {
+      case UP_CC:
+        mTransport.tempo().incRaw(1);
+        break;
+      case DOWN_CC:
+        mTransport.tempo().incRaw(-1);
+        break;
+      case LEFT_CC:
+        if (mDeviceMode) mSelectedRemoteControls.selectNextPage(true);
+        else mSendBank.scrollBackwards();
+        break;
+      case RIGHT_CC:
+        if (mDeviceMode) mSelectedRemoteControls.selectPreviousPage(true);
+        else mSendBank.scrollForwards();
+        break;
+      case SOLO_CC:
+        mTrackCtrl = TrackControl.SOLO;
+        updateSideButtons();
+        updatePads();
+        break;
+      case MUTE_CC:
+        mTrackCtrl = TrackControl.MUTE;
+        updateSideButtons();
+        updatePads();
+        break;
+      case ARM_CC:
+        mTrackCtrl = TrackControl.ARM;
+        updateSideButtons();
+        updatePads();
+        break;
+      case DEV_CC:
+        mDeviceMode = !mDeviceMode;
+        updateSideButtons();
+        break;
     }
+  }
+
+  private void processCC(int cc, int value) {
+    if (isAnalogCC(cc))
+      processContinious(cc, value);
+    else if (value == 127)
+      processButton(cc, value);
   }
 
   private void onMidi(ShortMidiMessage msg) {

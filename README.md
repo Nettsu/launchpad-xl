@@ -3,13 +3,16 @@
 This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that targets my very specific needs.
 
 Launchpad part:
-- The clip launching grid is 8x5 and you can scroll it as usual using the arrow buttons.
+- The clip launching grid is 8x5 and you can scroll it as usual using the arrow buttons
 - Below the grid there is a dedicated STOP button for each track
-- Further below are two momentary switches used to control Remote Controls 3 and 4 of the first device on each track. Holding the button sets the Remote Control to 100% while releasing it resets it to 0%. Great for quick rythmic effects on each track.
+- Further below are two momentary switches used to control Remote Controls 3 and 4 of the selected device on each track. Holding the button sets the Remote Control to 100% while releasing it resets it to 0%. Great for quick rythmic effects on each track
 - Instead of scene launching the rightmost column control the 9th tracks' Remote Controls:
   + First 5 buttons work as a fader to control the first Remote Control
-  + The other two control Remote Controls 2 and 3. Pressing them toggles between 0% and 100%.
-- Holding the bottom right corner button (SHIFT in this script) allows to launch scenes with the first 5 scene buttons and stop all tracks with the 6th
+  + The other two control Remote Controls 2 and 3. Pressing them toggles between 0% and 100%
+- Holding the bottom right corner button (SHIFT in this script) changes the behaviour of some butttons:
+  + first 5 scene buttons launch scenes
+  + 6th scene button stops all tracks
+  + the remote control buttons for track 1-8 work as a toggle instead of a momentary hold
 
 ```
  track  track  track  track  track  track  track  track  track
@@ -47,13 +50,13 @@ Launchpad part:
 Launch Control XL part:
 - The first 7 columns control the tracks, following the selection of the Launchpad
 - The 8th column controls a send channel, select which channel with the left and right buttons
-- For track channels the first two knobs control the send amounts and the third one controls the first Remote Control of each track
-- For the send channel the knobs control the first three Remote Controls of the first device in the send channel chain
+- For track channels the first two knobs control the send amounts and the third one controls the first Remote Control of the selected device on each track
+- For the send channel the knobs control the first three Remote Controls of the selected device
 - The up and down buttons control the tempo
 - The Mute, Solo, Record Arm and two rows of buttons at the bottom work as originally intended
 - Pressing the Device button toggles on the 'Device' mode. When in 'Device' mode:
-  + the third row of knobs control the eight Remote Controls of currently selected device
-  + the left and right buttons select the previous/next device in the chain
+  + the third row of knobs control the eight Remote Controls of currently selected device on the currently selected track
+  + the left and right buttons select the previous/next Remote Control page
 
 ```
 +------+------+------+------+------+------+------+------+------+
