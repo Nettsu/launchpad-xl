@@ -2,7 +2,7 @@
 
 This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that targets my very specific needs.
 
-Launchpad part:
+### Launchpad part:
 - The clip launching grid is 8x5 and you can scroll it as usual using the arrow buttons
 - Below the grid there is a dedicated STOP button for each track
 - Further below are two momentary switches used to control Remote Controls 3 and 4 of the selected device on each track. Holding the button sets the Remote Control to 100% while releasing it resets it to 0%. Great for quick rythmic effects on each track
@@ -47,7 +47,7 @@ Launchpad part:
 +------+------+------+------+------+------+------+------+------+
 ```
 
-Launch Control XL part:
+### Launch Control XL part:
 - The first 7 columns control the tracks, following the selection of the Launchpad
 - The 8th column controls a send channel, select which channel with the left and right buttons
 - For track channels the first two knobs control the send amounts and the third one controls the first Remote Control of the selected device on each track
@@ -60,7 +60,7 @@ Launch Control XL part:
 
 ```
 +------+------+------+------+------+------+------+------+------+
-|track1 track2 track3 track4 track5 track6 track7  send        |
+|track1 track2 track3 track4 track5 track6 track7  SEND        |
 |                                                              |
 |-------------------------------------------------------       |
 |/send\ /send\ /send\ /send\ /send\ /send\ /send\ / RC \ [_][_]|
