@@ -6,7 +6,7 @@ Launchpad part:
 - The clip launching grid is 8x5 and you can scroll it as usual using the arrow buttons
 - Below the grid there is a dedicated STOP button for each track
 - Further below are two momentary switches used to control Remote Controls 3 and 4 of the selected device on each track. Holding the button sets the Remote Control to 100% while releasing it resets it to 0%. Great for quick rythmic effects on each track
-- Instead of scene launching the rightmost column control the 9th tracks' Remote Controls:
+- Instead of scene launching by default the rightmost column controls the 9th tracks' Remote Controls:
   + First 5 buttons work as a fader to control the first Remote Control
   + The other two control Remote Controls 2 and 3. Pressing them toggles between 0% and 100%
 - Holding the bottom right corner button (SHIFT in this script) changes the behaviour of some butttons:
@@ -21,19 +21,19 @@ Launchpad part:
 |  up  | down | left | rght | sess | drum | keys | user |      |
 |      |      |      |      |      |      |      |      |      |
 +------+------+------+------+------+------+------+------+------+
-| play | play | play | play | play | play | play | play | RC 1 |
+|      |      |      |      |      |      |      |      | RC 1 |
 |      |      |      |      |      |      |      |      | 100% |
 +------+------+------+------+------+------+------+------+------+
-| play | play | play | play | play | play | play | play | RC 1 |
+|      |      |      |      |      |      |      |      | RC 1 |
 |      |      |      |      |      |      |      |      |  75% |
 +------+------+------+------+------+------+------+------+------+
-| play | play | play | play | play | play | play | play | RC 1 |
+|      |      |      |      |      |      |      |      | RC 1 |
 |      |      |      |      |      |      |      |      |  50% |
-+------+------+------+------+------+------+------+------+------+
-| play | play | play | play | play | play | play | play | RC 1 |
++------+------+--CLIP LAUNCHING GRID 5x8--+------+------+------+
+|      |      |      |      |      |      |      |      | RC 1 |
 |      |      |      |      |      |      |      |      |  25% |
 +------+------+------+------+------+------+------+------+------+
-| play | play | play | play | play | play | play | play | RC 1 |
+|      |      |      |      |      |      |      |      | RC 1 |
 |      |      |      |      |      |      |      |      |   0% |
 +------+------+------+------+------+------+------+------+------+
 | stop | stop | stop | stop | stop | stop | stop | stop | RC 2 |
@@ -60,26 +60,26 @@ Launch Control XL part:
 
 ```
 +------+------+------+------+------+------+------+------+------+
-|track1 track2 track3 track4 track5 track6 track7 send 1       |
+|track1 track2 track3 track4 track5 track6 track7  send        |
 |                                                              |
-|-------------------------------------------------------- _  _ |
-|/send\ /send\ /send\ /send\ /send\ /send\ /send\ / RC \ [<][>]|
+|-------------------------------------------------------       |
+|/send\ /send\ /send\ /send\ /send\ /send\ /send\ / RC \ [_][_]|
 |\  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  3 /  U  F |
-|-------------------------------------------------------- _  _ |
+|-------------------------------------------------------       |
 |/send\ /send\ /send\ /send\ /send\ /send\ /send\ / RC \ [<][>]|
 |\  2 / \  2 / \  2 / \  2 / \  2 / \  2 / \  2 / \  2 /   BPM |
-|-------------------------------------------------------- _  _ |
+|-------------------------------------------------------       |
 |/ RC \ / RC \ / RC \ / RC \ / RC \ / RC \ / RC \ / RC \ [<][>]|
 |\  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 /  L  R |
 |                                                              |
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ___ |
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  | [DEV]|
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ___ |
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  | [MUT]|
-|volume|volume|volume|volume|volume|volume|volume|volume|  ___ |
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  | [SOL]|
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ___ |
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  | [ARM]|
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |      |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[DEVI]|
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |      |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[MUTE]|
+|volume|volume|volume|volume|volume|volume|volume|volume|      |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[SOLO]|
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |      |
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[rARM]|
 |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |   \  |
 |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |   /  |
 +------+------+------+------+------+------+------+------+   \  |
