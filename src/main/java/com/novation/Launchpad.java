@@ -74,9 +74,7 @@ public class Launchpad {
           RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_INACTIVE_COLOUR);
       });
       
-      slotBank.addColorObserver((idx, r, g, b) -> {
-        RGBState.send(mMidiOut, posToNote(idx, trackIdx), new RGBState(Color.fromRGB(r, g, b)));
-      });
+      slotBank.addColorObserver((idx, r, g, b) -> { updateTrackLED(trackIdx); });
 
       slotBank.addHasContentObserver((idx, hasContent) -> {
         RGBState slot_colour = new RGBState(slotBank.getItemAt(idx).color().get());
@@ -196,7 +194,34 @@ public class Launchpad {
   }
 
   private void updateTrackLED(int trackIdx) {
-    if (mShift) {
+
+    if (trackIdx < GRID_SIZE) {
+      Track track = mTrackBank.getItemAt(trackIdx);
+      ClipLauncherSlotBank slotBank = track.clipLauncherSlotBank();
+      for (int i = 0; i < NUM_SCENES; i++) {
+        ClipLauncherSlot slot = slotBank.getItemAt(i); 
+        if (slot.isPlaybackQueued().get())
+          updateClipLED(i, trackIdx, slot, STATE_PLAYING, true);
+        else if (slot.isPlaying().get())
+          updateClipLED(i, trackIdx, slot, STATE_PLAYING, false);
+        else if (slot.isStopQueued().get())
+          updateClipLED(i, trackIdx, slot, STATE_STOPPED, true);
+        else if (slot.isRecordingQueued().get())
+          updateClipLED(i, trackIdx, slot, STATE_RECORDS, true);
+        else if (slot.isRecording().get())
+          updateClipLED(i, trackIdx, slot, STATE_RECORDS, false);
+        else
+          updateClipLED(i, trackIdx, slot, STATE_STOPPED, false);
+      }
+      if (track.isQueuedForStop().get())
+        RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_INACTIVE_QUEUED_COLOUR);
+      else if (track.isStopped().get())
+        RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_INACTIVE_COLOUR);
+      else
+        RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_ACTIVE_COLOUR);
+      updateRemoteControlLED(trackIdx);
+    }
+    else if (mShift) {
       if (trackIdx == GRID_SIZE) {
         for (int i = 0; i < NUM_SCENES; i++)
           setPadCCColour(SCENE_CC[i], PLAY_COLOUR);
@@ -205,34 +230,8 @@ public class Launchpad {
       }
     }
     else {
-      if (trackIdx < GRID_SIZE) {
-        Track track = mTrackBank.getItemAt(trackIdx);
-        ClipLauncherSlotBank slotBank = track.clipLauncherSlotBank();
-        for (int i = 0; i < NUM_SCENES; i++) {
-          ClipLauncherSlot slot = slotBank.getItemAt(i); 
-          if (slot.isPlaybackQueued().get())
-            updateClipLED(i, trackIdx, slot, STATE_PLAYING, true);
-          else if (slot.isPlaying().get())
-            updateClipLED(i, trackIdx, slot, STATE_PLAYING, false);
-          else if (slot.isStopQueued().get())
-            updateClipLED(i, trackIdx, slot, STATE_STOPPED, true);
-          else if (slot.isRecordingQueued().get())
-            updateClipLED(i, trackIdx, slot, STATE_RECORDS, true);
-          else if (slot.isRecording().get())
-            updateClipLED(i, trackIdx, slot, STATE_RECORDS, false);
-          else
-            updateClipLED(i, trackIdx, slot, STATE_STOPPED, false);
-        }
-        if (track.isQueuedForStop().get())
-          RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_INACTIVE_QUEUED_COLOUR);
-        else if (track.isStopped().get())
-          RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_INACTIVE_COLOUR);
-        else
-          RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_ACTIVE_COLOUR);
-        updateRemoteControlLED(trackIdx);
-      }
       updateRemoteControlLED(trackIdx);
-      setPadCCColour(SCENE_CC[7], RGBState.OFF);
+      setPadCCColour(SCENE_CC[7], RGBState.OFF);  
     }
   }
 
