@@ -169,7 +169,7 @@ public class LaunchControlXL {
     int col = colFromCC(cc);
 
     if (row == 2 && mDeviceMode) {
-      mSelectedRemoteControls.getParameter(col).set(value, 128);
+      mEditorRemoteControls.getParameter(col).set(value, 128);
     }
     else if (col == 7) {
       switch (row) {
@@ -214,11 +214,11 @@ public class LaunchControlXL {
         mTransport.tempo().incRaw(-1);
         break;
       case LEFT_CC:
-        if (mDeviceMode) mSelectedRemoteControls.selectNextPage(true);
+        if (mDeviceMode) mEditorRemoteControls.selectNextPage(true);
         else mSendBank.scrollBackwards();
         break;
       case RIGHT_CC:
-        if (mDeviceMode) mSelectedRemoteControls.selectPreviousPage(true);
+        if (mDeviceMode) mEditorRemoteControls.selectPreviousPage(true);
         else mSendBank.scrollForwards();
         break;
       case SOLO_CC:

@@ -5,7 +5,7 @@ This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that 
 ### Launchpad part:
 - The clip launching grid is 8x5 and you can scroll it as usual using the arrow buttons
 - Below the grid there is a dedicated STOP button for each track
-- Further below are two momentary switches used to control Remote Controls 3 and 4 of the selected device on each track. Holding the button sets the Remote Control to 100% while releasing it resets it to 0%. Great for quick rythmic effects on each track
+- Further below are two momentary switches used to control Remote Controls 3 and 4 of the first device on each track. Holding the button sets the Remote Control to 100% while releasing it resets it to 0%. Great for quick rythmic effects on each track
 - Instead of scene launching by default the rightmost column controls the 9th tracks' Remote Controls:
   + First 5 buttons work as a fader to control the first Remote Control
   + The other two control Remote Controls 2 and 3. Pressing them toggles between 0% and 100%
@@ -50,12 +50,12 @@ This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that 
 ### Launch Control XL part:
 - The first 7 columns control the tracks, following the selection of the Launchpad
 - The 8th column controls a send channel, select which channel with the left and right buttons
-- For track channels the first two knobs control the send amounts and the third one controls the first Remote Control of the selected device on each track
-- For the send channel the knobs control the first three Remote Controls of the selected device
+- For track channels the first two knobs control the send amounts and the third one controls the first Remote Control of the first device on each track
+- For the send channel the knobs control the first three Remote Controls of the first device
 - The up and down buttons control the tempo
 - The Mute, Solo, Record Arm and two rows of buttons at the bottom work as originally intended
 - Pressing the Device button toggles on the 'Device' mode. When in 'Device' mode:
-  + the third row of knobs control the eight Remote Controls of currently selected device on the currently selected track
+  + the third row of knobs control the eight Remote Controls of the device currently selected in the GUI
   + the left and right buttons select the previous/next Remote Control page
 
 ```

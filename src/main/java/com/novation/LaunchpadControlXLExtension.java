@@ -30,17 +30,20 @@ public class LaunchpadControlXLExtension extends ControllerExtension
       mControlMidiOut = mHost.getMidiOutPort(1);
 
       mRemoteControls = new CursorRemoteControlsPage[NUM_TRACKS];
-      mCursorDevices = new CursorDevice[NUM_TRACKS];
-      mSelectedRemoteControls = mHost.createCursorTrack(3, NUM_SCENES).createCursorDevice().createCursorRemoteControlsPage(8);
+      mDeviceBank = new DeviceBank[NUM_TRACKS];
+      mEditorRemoteControls = mHost.createCursorTrack(3, NUM_SCENES).createCursorDevice().createCursorRemoteControlsPage(8);
       mSendRemoteControls = mSendBank.getItemAt(0).createCursorDevice("SendDevice").createCursorRemoteControlsPage(8);
 
       for (int col = 0; col < NUM_TRACKS; col++) {
-         mCursorDevices[col] = mTrackBank.getItemAt(col).createCursorDevice("CursorDevice" + col);
-         // mRemoteControls[col] = mCursorDevices[col].createCursorRemoteControlsPage("RemoteControls" + col, 8, "");
-         mRemoteControls[col] = mCursorDevices[col].createCursorRemoteControlsPage(8);
-
          final int trackIdx = col;
          final Track track = mTrackBank.getItemAt(trackIdx);
+         
+         mDeviceBank[col] = track.createDeviceBank(1);
+         mDeviceBank[col].getDevice(0).position().addValueObserver(pos -> { 
+            mDeviceBank[trackIdx].scrollIntoView(0);
+         });
+         mRemoteControls[col] = mDeviceBank[col].getDevice(0).createCursorRemoteControlsPage(8);
+
          track.isStopped().markInterested();
          track.isQueuedForStop().markInterested();
          track.color().markInterested();
@@ -93,8 +96,8 @@ public class LaunchpadControlXLExtension extends ControllerExtension
    public static TrackBank mSendBank;
    
    public static CursorRemoteControlsPage[] mRemoteControls;
-   public static CursorDevice[] mCursorDevices;
-   public static CursorRemoteControlsPage mSelectedRemoteControls;
+   public static DeviceBank[] mDeviceBank;
+   public static CursorRemoteControlsPage mEditorRemoteControls;
    public static CursorRemoteControlsPage mSendRemoteControls;
 
    public static boolean mShift;
