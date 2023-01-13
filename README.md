@@ -6,7 +6,7 @@ This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that 
 - The clip launching grid is 8x5 and you can scroll it as usual using the arrow buttons
 - Below the grid there is a dedicated STOP button for each track
 - Further below are two momentary switches used to control Remote Controls 3 and 4 of the first device on each track. Holding the button sets the Remote Control to 100% while releasing it resets it to 0%. Great for quick rythmic effects on each track
-- Instead of scene launching by default the rightmost column controls the 9th tracks' Remote Controls:
+- Instead of scene launching by default the rightmost column controls the 9th track's Remote Controls:
   + First 5 buttons work as a fader to control the first Remote Control
   + The other two control Remote Controls 2 and 3. Pressing them toggles between 0% and 100%
 - Holding the bottom right corner button (SHIFT in this script) changes the behaviour of some butttons:
@@ -51,14 +51,14 @@ This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that 
 - The first 7 columns control the tracks, following the selection of the Launchpad
 - The 8th column controls a send channel, select which channel with the left and right buttons
 - For track channels the first two knobs control the send amounts and the third one controls the first Remote Control of the first device on each track
-  + an exception is made for track 5, which has two RC knobs and one send knob instead
+  + an exception is made for track 5, which has two RC knobs and one send knob instead (since that is the only MIDI track in my live setup)
 - For the send channel the knobs control the first three Remote Controls of the first device
+- The LEDs colour under each knob indicate the value of the parameter in the DAW
 - The up and down buttons control the tempo
 - The Mute, Solo, Record Arm and two rows of buttons at the bottom work as originally intended
-- Pressing the Device button toggles on the 'Device' mode. When in 'Device' mode:
+- Pressing the Device button toggles on/off the DEVICE MODE. When in DEVICE MODE:
   + the third row of knobs control the eight Remote Controls of the device currently selected in the GUI
-  + the left and right buttons select the previous/next Remote Control page
-- The LEDs colour under each knob indicate the value of the parameter in the DAW
+  + the left and right buttons select the previous/next Remote Control page of that device
 
 ```
 +------+------+------+------+------+------+------+------+------+
@@ -75,13 +75,13 @@ This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that 
 |\  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 /  L  R |
 |                                                              |
 |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |      |
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[DEVI]|
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[DMOD]|
 |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |      |
 |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[MUTE]|
 |volume|volume|volume|volume|volume|volume|volume|volume|      |
 |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[SOLO]|
 |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |      |
-|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[rARM]|
+|  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |[ ARM]|
 |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |   \  |
 |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |  ||  |   /  |
 +------+------+------+------+------+------+------+------+   \  |
