@@ -5,8 +5,6 @@ import com.bitwig.extension.callback.ShortMidiMessageReceivedCallback;
 import com.bitwig.extension.controller.api.*;
 
 import static com.novation.LaunchpadControlXLExtension.*;
-import static com.novation.LaunchControlXL.KnobType.*;
-import static com.novation.LaunchControlXL.ChannelType.*;
 
 public class LaunchControlXL {
 
@@ -43,24 +41,51 @@ public class LaunchControlXL {
   static final int[] FOCUS_BUTTONS = {41, 42, 43, 44, 57, 58, 59, 60};
   static final int[] CONTROL_BUTTONS = {73, 74, 75, 76, 89, 90, 91, 92};
 
-  public enum KnobType {
-    SEND_KNOB,
-    RC_KNOB,
-  }
-
-  public enum ChannelType {
-    TRACK_CH,
-    SEND_CH
-  }
-
-  static final ChannelType[] CHANNEL_TYPES = {
-    TRACK_CH, TRACK_CH, TRACK_CH, TRACK_CH, TRACK_CH, TRACK_CH, TRACK_CH, SEND_CH
+  static final Track[] CHANNELS = {
+    mTrackBank.getItemAt(0),
+    mTrackBank.getItemAt(1),
+    mTrackBank.getItemAt(2),
+    mTrackBank.getItemAt(3),
+    mTrackBank.getItemAt(4),
+    mTrackBank.getItemAt(5),
+    mTrackBank.getItemAt(6),
+    mSendBank.getItemAt(0)
   };
 
-  static final KnobType[][] KNOB_TYPES = {
-    {SEND_KNOB, SEND_KNOB, SEND_KNOB, SEND_KNOB, SEND_KNOB, SEND_KNOB, SEND_KNOB, RC_KNOB},
-    {SEND_KNOB, SEND_KNOB, SEND_KNOB, SEND_KNOB, RC_KNOB,   SEND_KNOB, SEND_KNOB, RC_KNOB},
-    {RC_KNOB,   RC_KNOB,   RC_KNOB,   RC_KNOB,   RC_KNOB,   RC_KNOB,   RC_KNOB,   RC_KNOB}
+  static final SettableRangedValue[][] KNOB_CONTROLS = {
+    // first row (Send A)
+    {
+      mTrackBank.getItemAt(0).sendBank().getItemAt(0).value(),
+      mTrackBank.getItemAt(1).sendBank().getItemAt(0).value(),
+      mTrackBank.getItemAt(2).sendBank().getItemAt(0).value(),
+      mTrackBank.getItemAt(3).sendBank().getItemAt(0).value(),
+      mTrackBank.getItemAt(4).sendBank().getItemAt(0).value(),
+      mTrackBank.getItemAt(5).sendBank().getItemAt(0).value(),
+      mTrackBank.getItemAt(6).sendBank().getItemAt(0).value(),
+      mSendRemoteControls.getParameter(2).value()
+    },
+    // second row (Send B)
+    {
+      mTrackBank.getItemAt(0).sendBank().getItemAt(1).value(),
+      mTrackBank.getItemAt(1).sendBank().getItemAt(1).value(),
+      mTrackBank.getItemAt(2).sendBank().getItemAt(1).value(),
+      mTrackBank.getItemAt(3).sendBank().getItemAt(1).value(),
+      mRemoteControls[4].getParameter(1).value(),
+      mTrackBank.getItemAt(5).sendBank().getItemAt(1).value(),
+      mTrackBank.getItemAt(6).sendBank().getItemAt(1).value(),
+      mSendRemoteControls.getParameter(1).value()
+    },
+    // thrid row (Pan / Device)
+    {
+      mRemoteControls[0].getParameter(0).value(),
+      mRemoteControls[1].getParameter(0).value(),
+      mRemoteControls[2].getParameter(0).value(),
+      mRemoteControls[3].getParameter(0).value(),
+      mRemoteControls[4].getParameter(0).value(),
+      mRemoteControls[5].getParameter(0).value(),
+      mRemoteControls[6].getParameter(0).value(),
+      mSendRemoteControls.getParameter(0).value()
+    },
   };
 
   static final int[][] COLOR_GRADIENT = {
@@ -98,19 +123,10 @@ public class LaunchControlXL {
 
     for (int i = 0; i < 8; i++) {
       final int track_idx = i;
-      Track track;
-      CursorRemoteControlsPage rc_page;
-      if (CHANNEL_TYPES[i] == SEND_CH) {
-        track = mSendBank.getItemAt(0);
-        rc_page = mSendRemoteControls;
-      }
-      else {
-        track = mTrackBank.getItemAt(i);
-        rc_page = mRemoteControls[track_idx];
-      } 
+      Track track = CHANNELS[i];
 
       track.solo().addValueObserver(solo -> {
-        if (mTrackCtrl == TrackControl.SOLO)
+        if (mTrackCtrl == TrackControl.SOLO) 
           setColour(4, track_idx, solo ? SOLO_COLOUR : XL_COLOUR_OFF);
       });
 
@@ -130,24 +146,16 @@ public class LaunchControlXL {
 
       for (int knob = 0; knob < 3; knob++) {
         final int knob_idx = knob;
-        if (KNOB_TYPES[knob][track_idx] == RC_KNOB) {
-            rc_page.getParameter(2 - knob).value().addValueObserver(GRADIENT_LEN, value -> {
-            setColour(knob_idx, track_idx, colourFromValue(value));
-          });
-        }
-        else if (KNOB_TYPES[knob][track_idx] == SEND_KNOB) {
-          track.sendBank().getItemAt(knob).value().addValueObserver(GRADIENT_LEN, value -> {
-            setColour(knob_idx, track_idx, colourFromValue(value));
-          });
-        }
+        KNOB_CONTROLS[knob_idx][track_idx].addValueObserver(GRADIENT_LEN, value -> {
+          setColour(knob_idx, track_idx, colourFromValue(value));
+        });
       }
     }
 
     for (int param = 0; param < 8; param++) {
       final int rc_idx = param;
       mEditorRemoteControls.getParameter(param).value().addValueObserver(GRADIENT_LEN, value -> {
-        if (!mDeviceMode) return;
-        setColour(2, rc_idx, colourFromValue(value));
+        if (mDeviceMode) setColour(2, rc_idx, colourFromValue(value));
       });
     }
   }
@@ -163,9 +171,7 @@ public class LaunchControlXL {
 
   private void setColour(int row, int col, int colour) {
     int index = row * 8 + col;
-    String idx = String.format("%02X", index);
-    String c = String.format("%02X", colour);
-    mMidiOut.sendSysex("F0 00 20 29 02 11 78 08 " + idx + " " + c + " F7");
+    setColour(index, colour);
   }
 
   private void setColour(int index, int colour) {
@@ -174,18 +180,8 @@ public class LaunchControlXL {
     mMidiOut.sendSysex("F0 00 20 29 02 11 78 08 " + idx + " " + c + " F7");
   }
 
-  private void selectTrack(int idx) {
-    if (CHANNEL_TYPES[idx] == SEND_CH) mSendBank.getItemAt(0).selectInEditor();
-    else mTrackBank.getItemAt(idx).selectInEditor();
-  }
-
   private void controlButtonPress(int idx) {
-    Track track;
-    if (CHANNEL_TYPES[idx] == SEND_CH)
-      track = mSendBank.getItemAt(0);
-    else
-      track = mTrackBank.getItemAt(idx);
-
+    Track track = CHANNELS[idx];
     switch (mTrackCtrl) {
       case SOLO:
         boolean solo_val = track.solo().getAsBoolean();
@@ -207,7 +203,7 @@ public class LaunchControlXL {
 
     for (int i = 0; i < 8; i++) {
       if (note == FOCUS_BUTTONS[i]) {
-        selectTrack(i);
+        CHANNELS[i].selectInEditor();
         return;
       }
       else if (note == CONTROL_BUTTONS[i]) {
@@ -254,9 +250,7 @@ public class LaunchControlXL {
 
   private void updatePadLEDs() {
     for (int i = 0; i < 8; i++) {      
-      Track track;
-      if (CHANNEL_TYPES[i] == SEND_CH) track = mSendBank.getItemAt(0);
-      else track = mTrackBank.getItemAt(i);
+      Track track = CHANNELS[i];
       
       int colour = XL_COLOUR_OFF;
       if (mTrackCtrl == TrackControl.SOLO && track.solo().getAsBoolean())
@@ -275,19 +269,8 @@ public class LaunchControlXL {
         double value = 0;
         if (mDeviceMode && knob == 2)
           value = mEditorRemoteControls.getParameter(track).get();
-        else if (KNOB_TYPES[knob][track] == SEND_KNOB) {
-          if (CHANNEL_TYPES[track] == SEND_CH)
-            value = mSendBank.getItemAt(0).sendBank().getItemAt(knob).get();
-          else
-            value = mTrackBank.getItemAt(track).sendBank().getItemAt(knob).get();
-        }
-        else if (KNOB_TYPES[knob][track] == RC_KNOB) {
-          if (CHANNEL_TYPES[track] == SEND_CH)
-            value = mSendRemoteControls.getParameter(2 - knob).get();
-          else
-            value = mRemoteControls[track].getParameter(2 - knob).get();
-        }
-
+        else
+          value = KNOB_CONTROLS[knob][track].get();
         value *= GRADIENT_LEN - 1;
         setColour(knob, track, colourFromValue((int)value));
       }
@@ -315,23 +298,12 @@ public class LaunchControlXL {
   }
 
   private void processContinious(int row, int col, int value) {
-    if (row == 2 && mDeviceMode) {
+    if (row == 2 && mDeviceMode)
       mEditorRemoteControls.getParameter(col).set(value, 128);
-    }
-    else if (CHANNEL_TYPES[col] == SEND_CH) {
-      if (row == 3)
-        mSendBank.getItemAt(0).volume().set(value, 161);
-      else
-        mSendRemoteControls.getParameter(2 - row).set(value, 128);
-    }
-    else {
-      if (row == 3)
-        mTrackBank.getItemAt(col).volume().set(value, 161);
-      else if (KNOB_TYPES[row][col] == SEND_KNOB)
-        mTrackBank.getItemAt(col).sendBank().getItemAt(row).set(value, 128);
-      else if (KNOB_TYPES[row][col] == RC_KNOB)
-        mRemoteControls[col].getParameter(2 - row).set(value, 128);
-    }
+    else if (row == 3)
+      CHANNELS[col].volume().set(value, 161);
+    else
+      KNOB_CONTROLS[row][col].set(value, 128);
   }
 
   private void processCCButton(int cc, int value) {
@@ -344,17 +316,11 @@ public class LaunchControlXL {
         break;
       case LEFT_CC:
         if (mDeviceMode) mEditorRemoteControls.selectNextPage(true);
-        else {
-          mSendBank.scrollBackwards();
-          mSendBank.getItemAt(0).selectInMixer();
-        }
+        else mSendBank.scrollBackwards();
         break;
       case RIGHT_CC:
         if (mDeviceMode) mEditorRemoteControls.selectPreviousPage(true);
-        else {
-          mSendBank.scrollForwards();
-          mSendBank.getItemAt(0).selectInMixer();
-        }
+        else mSendBank.scrollForwards();
         break;
     }
   }
@@ -378,12 +344,10 @@ public class LaunchControlXL {
       case 0x90:
         processNote(msg.getData1(), msg.getData2());
         break;
-
       // CC
       case 0xB0:
         processCC(msg.getData1(), msg.getData2());
         break;
-
       default:
         mHost.println("Unhandled midi status: " + msg.getStatusByte());
         break;
