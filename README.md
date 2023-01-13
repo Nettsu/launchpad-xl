@@ -51,12 +51,14 @@ This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that 
 - The first 7 columns control the tracks, following the selection of the Launchpad
 - The 8th column controls a send channel, select which channel with the left and right buttons
 - For track channels the first two knobs control the send amounts and the third one controls the first Remote Control of the first device on each track
+  + an exception is made for track 5, which has two RC knobs and one send knob instead
 - For the send channel the knobs control the first three Remote Controls of the first device
 - The up and down buttons control the tempo
 - The Mute, Solo, Record Arm and two rows of buttons at the bottom work as originally intended
 - Pressing the Device button toggles on the 'Device' mode. When in 'Device' mode:
   + the third row of knobs control the eight Remote Controls of the device currently selected in the GUI
   + the left and right buttons select the previous/next Remote Control page
+- The LEDs colour under each knob indicate the value of the parameter in the DAW
 
 ```
 +------+------+------+------+------+------+------+------+------+
@@ -66,7 +68,7 @@ This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that 
 |/send\ /send\ /send\ /send\ /send\ /send\ /send\ / RC \ [_][_]|
 |\  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  1 / \  3 /  U  F |
 |-------------------------------------------------------       |
-|/send\ /send\ /send\ /send\ /send\ /send\ /send\ / RC \ [<][>]|
+|/send\ /send\ /send\ /send\ / RC \ /send\ /send\ / RC \ [<][>]|
 |\  2 / \  2 / \  2 / \  2 / \  2 / \  2 / \  2 / \  2 /   BPM |
 |-------------------------------------------------------       |
 |/ RC \ / RC \ / RC \ / RC \ / RC \ / RC \ / RC \ / RC \ [<][>]|
