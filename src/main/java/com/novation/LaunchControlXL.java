@@ -41,7 +41,29 @@ public class LaunchControlXL {
   static final int[] FOCUS_BUTTONS = {41, 42, 43, 44, 57, 58, 59, 60};
   static final int[] CONTROL_BUTTONS = {73, 74, 75, 76, 89, 90, 91, 92};
 
-  static final Track[] CHANNELS = {
+  static final int[][] COLOR_GRADIENT = {
+    // R, G
+    {0, 0},
+    {0, 1},
+    {0, 2},
+    {0, 3},
+    {1, 3},
+    {2, 3},
+    {3, 3},
+    {3, 2},
+    {3, 1},
+    {3, 0},
+  };
+
+  static final int GRADIENT_LEN = COLOR_GRADIENT.length;
+
+  public enum TrackControl {
+    SOLO,
+    MUTE,
+    ARM 
+  }
+
+  private Track[] mChannels = {
     mTrackBank.getItemAt(0),
     mTrackBank.getItemAt(1),
     mTrackBank.getItemAt(2),
@@ -52,7 +74,7 @@ public class LaunchControlXL {
     mSendBank.getItemAt(0)
   };
 
-  static final SettableRangedValue[][] KNOB_CONTROLS = {
+  private SettableRangedValue[][] mKnobControls = {
     // first row (Send A)
     {
       mTrackBank.getItemAt(0).sendBank().getItemAt(0).value(),
@@ -88,27 +110,11 @@ public class LaunchControlXL {
     },
   };
 
-  static final int[][] COLOR_GRADIENT = {
-  // R, G
-    {0, 0},
-    {0, 1},
-    {0, 2},
-    {0, 3},
-    {1, 3},
-    {2, 3},
-    {3, 3},
-    {3, 2},
-    {3, 1},
-    {3, 0},
-  };
+  private MidiOut mMidiOut;
+  private MidiIn mMidiIn;
 
-  static final int GRADIENT_LEN = COLOR_GRADIENT.length;
-
-  public enum TrackControl {
-    SOLO,
-    MUTE,
-    ARM 
-  }
+  private boolean mDeviceMode;
+  private TrackControl mTrackCtrl;
 
   public void init() {
     mMidiIn = mControlMidiIn;
@@ -123,7 +129,7 @@ public class LaunchControlXL {
 
     for (int i = 0; i < 8; i++) {
       final int track_idx = i;
-      Track track = CHANNELS[i];
+      Track track = mChannels[i];
 
       track.solo().addValueObserver(solo -> {
         if (mTrackCtrl == TrackControl.SOLO) 
@@ -146,7 +152,7 @@ public class LaunchControlXL {
 
       for (int knob = 0; knob < 3; knob++) {
         final int knob_idx = knob;
-        KNOB_CONTROLS[knob_idx][track_idx].addValueObserver(GRADIENT_LEN, value -> {
+        mKnobControls[knob_idx][track_idx].addValueObserver(GRADIENT_LEN, value -> {
           setColour(knob_idx, track_idx, colourFromValue(value));
         });
       }
@@ -181,7 +187,7 @@ public class LaunchControlXL {
   }
 
   private void controlButtonPress(int idx) {
-    Track track = CHANNELS[idx];
+    Track track = mChannels[idx];
     switch (mTrackCtrl) {
       case SOLO:
         boolean solo_val = track.solo().getAsBoolean();
@@ -203,7 +209,7 @@ public class LaunchControlXL {
 
     for (int i = 0; i < 8; i++) {
       if (note == FOCUS_BUTTONS[i]) {
-        CHANNELS[i].selectInEditor();
+        mChannels[i].selectInEditor();
         return;
       }
       else if (note == CONTROL_BUTTONS[i]) {
@@ -250,7 +256,7 @@ public class LaunchControlXL {
 
   private void updatePadLEDs() {
     for (int i = 0; i < 8; i++) {      
-      Track track = CHANNELS[i];
+      Track track = mChannels[i];
       
       int colour = XL_COLOUR_OFF;
       if (mTrackCtrl == TrackControl.SOLO && track.solo().getAsBoolean())
@@ -270,7 +276,7 @@ public class LaunchControlXL {
         if (mDeviceMode && knob == 2)
           value = mEditorRemoteControls.getParameter(track).get();
         else
-          value = KNOB_CONTROLS[knob][track].get();
+          value = mKnobControls[knob][track].get();
         value *= GRADIENT_LEN - 1;
         setColour(knob, track, colourFromValue((int)value));
       }
@@ -301,9 +307,9 @@ public class LaunchControlXL {
     if (row == 2 && mDeviceMode)
       mEditorRemoteControls.getParameter(col).set(value, 128);
     else if (row == 3)
-      CHANNELS[col].volume().set(value, 161);
+      mChannels[col].volume().set(value, 161);
     else
-      KNOB_CONTROLS[row][col].set(value, 128);
+      mKnobControls[row][col].set(value, 128);
   }
 
   private void processCCButton(int cc, int value) {
@@ -353,10 +359,4 @@ public class LaunchControlXL {
         break;
     }
   }
-
-  private MidiOut mMidiOut;
-  private MidiIn mMidiIn;
-
-  private boolean mDeviceMode;
-  private TrackControl mTrackCtrl;
 }

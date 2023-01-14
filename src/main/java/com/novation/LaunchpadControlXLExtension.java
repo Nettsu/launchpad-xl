@@ -95,8 +95,8 @@ public class LaunchpadControlXLExtension extends ControllerExtension
    public void flush() {
    }
 
-   public static Launchpad mLaunchpad;
-   public static LaunchControlXL mLaunchControl;
+   public Launchpad mLaunchpad;
+   public LaunchControlXL mLaunchControl;
 
    public static ControllerHost mHost;
    public static Transport mTransport;
