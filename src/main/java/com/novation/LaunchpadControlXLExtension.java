@@ -33,7 +33,12 @@ public class LaunchpadControlXLExtension extends ControllerExtension
       mRemoteControls = new CursorRemoteControlsPage[NUM_TRACKS];
       mDeviceBank = new DeviceBank[NUM_TRACKS];
       mEditorRemoteControls = mHost.createCursorTrack(3, NUM_SCENES).createCursorDevice().createCursorRemoteControlsPage(8);
-      mSendRemoteControls = mSendBank.getItemAt(0).createCursorDevice("SendDevice").createCursorRemoteControlsPage(8);
+
+      mSendDeviceBank = mSendBank.getItemAt(0).createDeviceBank(1);
+      mSendDeviceBank.getDevice(0).position().addValueObserver(pos -> {
+         mSendDeviceBank.scrollIntoView(0);
+      });
+      mSendRemoteControls = mSendDeviceBank.getDevice(0).createCursorRemoteControlsPage(8);
 
       for (int i = 0; i < 8; i++) {
          mSendRemoteControls.getParameter(i).markInterested();
@@ -113,6 +118,7 @@ public class LaunchpadControlXLExtension extends ControllerExtension
    
    public static CursorRemoteControlsPage[] mRemoteControls;
    public static DeviceBank[] mDeviceBank;
+   public static DeviceBank mSendDeviceBank;
    public static CursorRemoteControlsPage mEditorRemoteControls;
    public static CursorRemoteControlsPage mSendRemoteControls;
 
