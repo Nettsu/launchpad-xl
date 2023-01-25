@@ -59,9 +59,9 @@ public class RGBState extends InternalHardwareLightState {
          }
       }
       mNumber = best;
-      mHost.println("best: " + best);
-      mHost.println("input: " + c.toHex());
-      mHost.println("chosen hex: " + Color.fromHex((String)RGB_HEX_COLOR_TABLE[best][1]).toHex());
+      // mHost.println("best: " + best);
+      // mHost.println("input: " + c.toHex());
+      // mHost.println("chosen hex: " + Color.fromHex((String)RGB_HEX_COLOR_TABLE[best][1]).toHex());
 
       //mColor = Color.fromHex(Integer.toHexString(RGB_COLOR_TABLE[best][1]));
       mColor = c; // When sending via Sysex

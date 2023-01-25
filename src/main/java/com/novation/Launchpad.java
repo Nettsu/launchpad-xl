@@ -3,7 +3,6 @@ package com.novation;
 import com.bitwig.extension.api.util.midi.ShortMidiMessage;
 import com.bitwig.extension.callback.ShortMidiMessageReceivedCallback;
 import com.bitwig.extension.controller.api.*;
-import com.bitwig.extension.api.Color;
 
 import static com.novation.LaunchpadControlXLExtension.*;
 
@@ -18,10 +17,6 @@ public class Launchpad {
   static final int RIGHT_CC = 94;
   static final int[] SCENE_CC = {89, 79, 69, 59, 49, 39, 29, 19};
 
-  static final int[] PAD_REMOTE_CTRL = {2,3};
-
-  static final int FADER_LENGTH = 5;
-
   static final int STATE_STOPPED = 0;
   static final int STATE_PLAYING = 1;
   static final int STATE_RECORDS = 2;
@@ -35,6 +30,40 @@ public class Launchpad {
   static final RGBState STOP_ACTIVE_COLOUR = RGBState.DARKGREY;
   static final RGBState STOP_INACTIVE_COLOUR = RGBState.OFF;
   static final RGBState STOP_INACTIVE_QUEUED_COLOUR = RGBState.DARKGREY_BLINK;
+
+  // last two rows of pads control params (0% when not held, 100% when held)
+  private SettableRangedValue[][] mPadControls = {
+    {
+      mRemoteControls[0].getParameter(2).value(),
+      mRemoteControls[1].getParameter(2).value(),
+      mRemoteControls[2].getParameter(2).value(),
+      mRemoteControls[3].getParameter(2).value(),
+      mRemoteControls[4].getParameter(2).value(),
+      mRemoteControls[5].getParameter(2).value(),
+      mRemoteControls[6].getParameter(2).value(),
+      mRemoteControls[7].getParameter(2).value()
+    },
+    {
+      mRemoteControls[0].getParameter(3).value(),
+      mRemoteControls[1].getParameter(3).value(),
+      mRemoteControls[2].getParameter(3).value(),
+      mRemoteControls[3].getParameter(3).value(),
+      mRemoteControls[4].getParameter(3).value(),
+      mRemoteControls[5].getParameter(3).value(),
+      mRemoteControls[6].getParameter(3).value(),
+      mRemoteControls[7].getParameter(3).value()
+    },
+  };
+
+  private SettableRangedValue[] mSceneControls = {
+    mRemoteControls[8].getParameter(0).value(),
+    mRemoteControls[8].getParameter(1).value(),
+    mRemoteControls[8].getParameter(2).value(),
+    mRemoteControls[8].getParameter(3).value(),
+    mRemoteControls[8].getParameter(4).value(),
+    mRemoteControls[8].getParameter(5).value(),
+    mRemoteControls[8].getParameter(6).value()
+  };
 
   public void init() {
     mMidiIn = mPadMidiIn;
@@ -86,35 +115,28 @@ public class Launchpad {
         updateClipLED(idx, trackIdx, slot, state, queued);
       });
 
-      for (int pad_param = 0; pad_param < PAD_REMOTE_CTRL.length; pad_param++) {
-        final int pad_param_f = pad_param;
-        final int rc_idx = PAD_REMOTE_CTRL[pad_param];
+      for (int pad = 0; pad < mPadControls.length; pad++) {
+        final int pad_f = pad;
 
-        mRemoteControls[trackIdx].getParameter(rc_idx).value().addValueObserver(2, value -> {
-          final int row = GRID_SIZE - PAD_REMOTE_CTRL.length + pad_param_f;
+        mPadControls[pad][col].addValueObserver(2, value -> {
+          final int row = NUM_SCENES + 1 + pad_f;
           final int pos_note = posToNote(row, trackIdx);
           RGBState.send(mMidiOut, pos_note, value > 0 ? PLAY_COLOUR : RGBState.OFF);
         });
       }
     }
 
-    // extra 9th track controlled by the scene launch buttons (first 3 RCs)
+    // extra 9th track controlled by the scene launch buttons
 
     mTrackBank.getItemAt(GRID_SIZE).color().addValueObserver((r,g,b) -> {
       updateTrackLED(GRID_SIZE);
     });
-
-    mRemoteControls[GRID_SIZE].getParameter(0).value().addValueObserver(FADER_LENGTH, value -> {
-      RGBState track_colour = new RGBState(mTrackBank.getItemAt(GRID_SIZE).color().get());
-      for (int i = 0; i < FADER_LENGTH; i++)
-        setPadCCColour(SCENE_CC[i], value == 4 - i ? track_colour : INACTIVE_COLOUR);
-    });
     
-    for (int i = 1; i < 3; i++) {
+    for (int i = 0; i < mSceneControls.length; i++) {
       final int idx = i;
-      mRemoteControls[GRID_SIZE].getParameter(i).value().addValueObserver(2, value -> {
+      mSceneControls[i].addValueObserver(2, value -> {
         RGBState track_colour = new RGBState(mTrackBank.getItemAt(GRID_SIZE).color().get());
-        setPadCCColour(SCENE_CC[FADER_LENGTH - 1 + idx], value > 0 ? track_colour : RGBState.OFF);
+        setPadCCColour(SCENE_CC[idx], value > 0 ? track_colour : RGBState.OFF);
       });
     }
   }
@@ -156,30 +178,19 @@ public class Launchpad {
   }
 
   private void updateRemoteControlLED(int trackIdx) {
-    CursorRemoteControlsPage rc_page = mRemoteControls[trackIdx];
-
     if (trackIdx < GRID_SIZE) {
       // tracks 1-8 have two momentary remote controls
-      for (int i = 0; i < PAD_REMOTE_CTRL.length; i++) {
-        int row = GRID_SIZE - PAD_REMOTE_CTRL.length + i;
-        int rc_val = (int)Math.round(rc_page.getParameter(PAD_REMOTE_CTRL[i]).value().get());
+      for (int i = 0; i < mPadControls.length; i++) {
+        int row = i + NUM_SCENES + 1;
+        int rc_val = (int)Math.round(mPadControls[i][trackIdx].get());
         RGBState.send(mMidiOut, posToNote(row, trackIdx), rc_val > 0 ? PLAY_COLOUR : RGBState.OFF);
       }
     } else if (trackIdx == GRID_SIZE) {
-      // track 9 has one fader and two toggle remote controls
-      int max_fader_val = FADER_LENGTH - 1;
-      int rc_val_0 = (int)Math.round(rc_page.getParameter(0).value().get() * max_fader_val);
-      int rc_val_1 = (int)Math.round(rc_page.getParameter(1).value().get());
-      int rc_val_2 = (int)Math.round(rc_page.getParameter(2).value().get());
-      RGBState track_colour = new RGBState(mTrackBank.getItemAt(trackIdx).color().get());
-      
-      setPadCCColour(SCENE_CC[5], rc_val_1 > 0 ? track_colour : RGBState.OFF);
-      setPadCCColour(SCENE_CC[6], rc_val_2 > 0 ? track_colour : RGBState.OFF);
-
-      for (int i = 0; i < FADER_LENGTH; i++) {
-        final int button_val = max_fader_val - i;
-        final int button_cc = SCENE_CC[i];
-        setPadCCColour(button_cc, rc_val_0 == button_val ? track_colour : INACTIVE_COLOUR);
+      // track 9 has 7 toggle remotes
+      for (int i = 0; i < mSceneControls.length; i++) {
+        int rc_val = (int)Math.round(mSceneControls[i].get());
+        RGBState track_colour = new RGBState(mTrackBank.getItemAt(trackIdx).color().get());
+        setPadCCColour(SCENE_CC[i], rc_val > 0 ? track_colour : RGBState.OFF);
       }
     }
   }
@@ -243,16 +254,13 @@ public class Launchpad {
     } else if (row == NUM_SCENES && noteOn) {
       track.stop();
     } else {
-      int rc_idx = row + (PAD_REMOTE_CTRL.length - GRID_SIZE);
-      int rc_num = PAD_REMOTE_CTRL[rc_idx];
-      if (mShift && velocity == 127) {
-        int rc_val = (int)Math.round(mRemoteControls[col].getParameter(rc_num).value().get());
-        mRemoteControls[col].getParameter(rc_num).value().set(rc_val == 0 ? 1 : 0, 2);
-      }
-      else if (!mShift) {
-        int value = velocity == 127 ? 1 : 0;
-        mRemoteControls[col].getParameter(rc_num).value().set(value, 2);
-      }
+      int rc_idx = row - NUM_SCENES - 1;
+      int rc_val = (int)Math.round(mPadControls[rc_idx][col].get());
+
+      if (mShift && velocity == 127)
+        mPadControls[rc_idx][col].set(rc_val == 0 ? 1 : 0, 2);
+      else if (!mShift)
+        mPadControls[rc_idx][col].set(velocity == 127 ? 1 : 0, 2);
     }
   }
 
@@ -294,27 +302,23 @@ public class Launchpad {
         mTrackBank.getItemAt(0).makeVisibleInMixer();
         return;
     }
-    // scene launch buttons control 3 RCs of the 9th track
+    // scene launch buttons control RCs of the 9th track
     for (int i = 0; i < 8; i++)
       if (SCENE_CC[i] == cc) {
-        if (i < 5) {
-          if (!mShift)
-            mRemoteControls[GRID_SIZE].getParameter(0).value().set(cc / 10 - 4, 5);
-          else
+        if (mShift) {
+          if (i < 5)
             mSceneBank.launch(8 - cc / 10);
+          else if (i == 5)
+            for (int col = 0; col < NUM_TRACKS; col++)
+              mTrackBank.getItemAt(col).stop();
         }
-        else if (i == 5 && mShift) {
-          for (int col = 0; col < NUM_TRACKS; col++)
-            mTrackBank.getItemAt(col).stop();
-        }
-        else if (i == 5 || i == 6) {
-          int max_fader_val = FADER_LENGTH - 1;
-          RemoteControl rc = mRemoteControls[GRID_SIZE].getParameter(i - max_fader_val);
-          int rc_val = (int)Math.round(rc.value().get());
-          rc.value().set(rc_val == 0 ? 1 : 0, 2);
-        }
-        else if (i == 7) {
-          enterShift();
+        else {
+          if (i == 7)
+            enterShift();
+          else {
+            int rc_val = (int)Math.round(mSceneControls[i].get());
+            mSceneControls[i].set(rc_val == 0 ? 1 : 0, 2);
+          }
         }
       }
   }
