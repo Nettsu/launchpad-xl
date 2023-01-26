@@ -248,10 +248,10 @@ public class Launchpad {
 
   private void processNote(int row, int col, boolean noteOn, int velocity) {
     Track track = mTrackBank.getItemAt(col);
-    if (row < NUM_SCENES && noteOn) {
+    if (row < NUM_SCENES && velocity == 127) {
       ClipLauncherSlot slot = track.clipLauncherSlotBank().getItemAt(row);
       slot.launch();
-    } else if (row == NUM_SCENES && noteOn) {
+    } else if (row == NUM_SCENES && velocity == 127) {
       track.stop();
     } else {
       int rc_idx = row - NUM_SCENES - 1;

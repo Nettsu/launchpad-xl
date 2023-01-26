@@ -303,11 +303,44 @@ public class LaunchControlXL {
     return new CCData(false, 0, 0);
   }
 
+  private int mFaderPoints[][] = {
+    {0, 0},
+    {6, 10},
+    {23, 25},
+    {37, 40},
+    {50, 51},
+    {70, 64},
+    {88, 80},
+    {108, 90},
+    {127, 100},
+  };
+
+  private int scaleFader(int cc) {
+    int ret_val = 0;
+    for (int i = 1; i < mFaderPoints.length; i++) {
+      if (cc <= mFaderPoints[i][0]) {
+        float x1 = mFaderPoints[i-1][0];
+        float y1 = mFaderPoints[i-1][1];
+        float x2 = mFaderPoints[i][0];
+        float y2 = mFaderPoints[i][1];
+
+        float slope = (y2 - y1) / (x2 - x1);
+        float b = y1 - slope * x1;
+
+        ret_val = (int)(slope * (float)cc + b);
+
+        mHost.println(ret_val + " = " + slope + "*" + cc + " + " + b);
+        break;
+      }
+    }
+    return ret_val;
+  }
+
   private void processContinious(int row, int col, int value) {
     if (row == 2 && mDeviceMode)
       mEditorRemoteControls.getParameter(col).set(value, 128);
     else if (row == 3)
-      mChannels[col].volume().set(value, 161);
+      mChannels[col].volume().set(scaleFader(value), 128);
     else
       mKnobControls[row][col].set(value, 128);
   }
@@ -342,7 +375,7 @@ public class LaunchControlXL {
   private void onMidi(ShortMidiMessage msg) {
     final int code = msg.getStatusByte() & 0xF0;
 
-    // mHost.println("midi: " + msg.getStatusByte() + ", " + msg.getData1() + ", " + msg.getData2());
+    mHost.println("midi: " + msg.getStatusByte() + ", " + msg.getData1() + ", " + msg.getData2());
 
     switch (code) {
       // Note on/off

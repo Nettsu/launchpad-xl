@@ -57,6 +57,7 @@ This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that 
 - Pressing the Device button toggles on/off the DEVICE MODE. When in DEVICE MODE:
   + the third row of knobs control the eight Remote Controls of the device currently selected in the GUI
   + the left and right buttons select the previous/next Remote Control page of that device
+- The Bitwig volume faders match more closely with the volume printed on the controler, with the exception that +6db at the controller is actually 0db in Bitwig and 0db on the controller maps to -3db in Bitwig
 
 ```
 +------+------+------+------+------+------+------+------+------+
