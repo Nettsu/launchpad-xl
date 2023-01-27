@@ -283,13 +283,13 @@ public class Launchpad {
     switch (cc) {
       case UP_CC:
         mSceneBank.scrollPageBackwards();
-        mSendBank.sceneBank().scrollPageBackwards();
+        // mSendBank.sceneBank().scrollPageBackwards();
         mSceneBank.getItemAt(NUM_SCENES - 1).showInEditor();
         mSceneBank.getItemAt(0).showInEditor();
         return;
       case DOWN_CC:
         mSceneBank.scrollPageForwards();
-        mSendBank.sceneBank().scrollPageForwards();
+        // mSendBank.sceneBank().scrollPageForwards();
         mSceneBank.getItemAt(0).showInEditor();
         mSceneBank.getItemAt(NUM_SCENES - 1).showInEditor();
         return;

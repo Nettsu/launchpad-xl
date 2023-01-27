@@ -18,8 +18,12 @@ public class LaunchpadControlXLExtension extends ControllerExtension
       mHost = getHost();
       mTransport = mHost.createTransport();
       mTrackBank = mHost.createTrackBank(NUM_TRACKS, NUM_SENDS, NUM_SCENES);
-      mSceneBank = mTrackBank.sceneBank();
       mSendBank = mHost.createEffectTrackBank(1, NUM_SCENES);
+
+      mSceneBank = mTrackBank.sceneBank();
+      mSceneBank.scrollPosition().addValueObserver(idx -> {
+         mSendBank.sceneBank().scrollPosition().set(idx);
+      });
 
       mTrackBank.setShouldShowClipLauncherFeedback(true);
       mSendBank.setShouldShowClipLauncherFeedback(true);
