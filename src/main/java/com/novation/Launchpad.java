@@ -253,7 +253,7 @@ public class Launchpad {
       slot.launch();
     } else if (row == NUM_SCENES && velocity == 127) {
       track.stop();
-    } else {
+    } else if (row > NUM_SCENES) {
       int rc_idx = row - NUM_SCENES - 1;
       int rc_val = (int)Math.round(mPadControls[rc_idx][col].get());
 

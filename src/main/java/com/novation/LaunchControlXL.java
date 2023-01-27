@@ -329,7 +329,7 @@ public class LaunchControlXL {
 
         ret_val = (int)(slope * (float)cc + b);
 
-        mHost.println(ret_val + " = " + slope + "*" + cc + " + " + b);
+        // mHost.println(ret_val + " = " + slope + "*" + cc + " + " + b);
         break;
       }
     }
@@ -375,7 +375,7 @@ public class LaunchControlXL {
   private void onMidi(ShortMidiMessage msg) {
     final int code = msg.getStatusByte() & 0xF0;
 
-    mHost.println("midi: " + msg.getStatusByte() + ", " + msg.getData1() + ", " + msg.getData2());
+    // mHost.println("midi: " + msg.getStatusByte() + ", " + msg.getData1() + ", " + msg.getData2());
 
     switch (code) {
       // Note on/off
