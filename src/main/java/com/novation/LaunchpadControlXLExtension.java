@@ -37,10 +37,12 @@ public class LaunchpadControlXLExtension extends ControllerExtension
       mRemoteControls = new CursorRemoteControlsPage[NUM_TRACKS];
       mDeviceBank = new DeviceBank[NUM_TRACKS];
       mEditorRemoteControls = mHost.createCursorTrack(3, NUM_SCENES).createCursorDevice().createCursorRemoteControlsPage(8);
+      
       mCursorClip = mHost.createLauncherCursorClip(1, 1);
-
+      mCursorClip.clipLauncherSlot().isSelected().markInterested();
       mCursorClip.clipLauncherSlot().sceneIndex().addValueObserver(idx -> {
-         mSceneBank.scrollPosition().set((idx / NUM_SCENES) * NUM_SCENES);
+         if (mCursorClip.clipLauncherSlot().isSelected().get())
+            mSceneBank.scrollPosition().set((idx / NUM_SCENES) * NUM_SCENES);
       });
 
       mSendDeviceBank = mSendBank.getItemAt(0).createDeviceBank(1);
