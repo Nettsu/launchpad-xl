@@ -6,38 +6,38 @@ This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that 
 - The clip launching grid is 8x5 and you can scroll it as usual using the arrow buttons
 - Below the grid there is a dedicated STOP button for each track
 - Further below are two momentary switches used to control Remote Controls 3 and 4 of the first device on each track. Holding the button sets the Remote Control to 100% while releasing it resets it to 0%. Great for quick rythmic effects on each track
-- Instead of scene launching by default the rightmost column controls the 9th track's 7 Remote Controls, toggling them between 0% and 100%.
+- Instead of scene launching by default the rightmost column controls 7 User Controls, freely mappable in Bitwig GUI, toggling them between 0% and 100%
 - Holding the bottom right corner button (SHIFT in this script) changes the behaviour of some butttons:
   + first 5 scene buttons launch scenes
   + 6th scene button stops all tracks
   + the remote control buttons for track 1-8 work as a toggle instead of a momentary hold
 
 ```
- track  track  track  track  track  track  track  track  track
-   1      2      3      4      5      6      7      8      9
+ track  track  track  track  track  track  track  track
+   1      2      3      4      5      6      7      8
 +------+------+------+------+------+------+------+------+------+
 |  up  | down | left | rght | sess | drum | keys | user |      |
 |      |      |      |      |      |      |      |      |      |
 +------+------+------+------+------+------+------+------+------+
-|      |      |      |      |      |      |      |      | RC 1 |
+|      |      |      |      |      |      |      |      | UC 1 |
 |      |      |      |      |      |      |      |      |      |
 +------+------+------+------+------+------+------+------+------+
-|      |      |      |      |      |      |      |      | RC 2 |
+|      |      |      |      |      |      |      |      | UC 2 |
 |      |      |      |      |      |      |      |      |      |
 +------+------+------+------+------+------+------+------+------+
-|      |      |      |      |      |      |      |      | RC 3 |
+|      |      |      |      |      |      |      |      | UC 3 |
 |      |      |      |      |      |      |      |      |      |
 +------+------+--CLIP LAUNCHING GRID 8x5--+------+------+------+
-|      |      |      |      |      |      |      |      | RC 4 |
+|      |      |      |      |      |      |      |      | UC 4 |
 |      |      |      |      |      |      |      |      |      |
 +------+------+------+------+------+------+------+------+------+
-|      |      |      |      |      |      |      |      | RC 5 |
+|      |      |      |      |      |      |      |      | UC 5 |
 |      |      |      |      |      |      |      |      |      |
 +------+------+------+------+------+------+------+------+------+
-| stop | stop | stop | stop | stop | stop | stop | stop | RC 6 |
+| stop | stop | stop | stop | stop | stop | stop | stop | UC 6 |
 |      |      |      |      |      |      |      |      |      |
 +------+------+------+------+------+------+------+------+------+
-| RC 3 | RC 3 | RC 3 | RC 3 | RC 3 | RC 3 | RC 3 | RC 3 | RC 7 |
+| RC 3 | RC 3 | RC 3 | RC 3 | RC 3 | RC 3 | RC 3 | RC 3 | UC 7 |
 | hold | hold | hold | hold | hold | hold | hold | hold |      |
 +------+------+------+------+------+------+------+------+------+
 | RC 4 | RC 4 | RC 4 | RC 4 | RC 4 | RC 4 | RC 4 | RC 4 | SHFT |

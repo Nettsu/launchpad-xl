@@ -6,7 +6,7 @@ import com.bitwig.extension.controller.ControllerExtension;
 public class LaunchpadControlXLExtension extends ControllerExtension
 {
    static final int NUM_SCENES = 5;
-   static final int NUM_TRACKS = 9;
+   static final int NUM_TRACKS = 8;
    static final int NUM_SENDS = 8;
 
    protected LaunchpadControlXLExtension(final LaunchpadControlXLExtensionDefinition definition, final ControllerHost host) {
@@ -37,6 +37,7 @@ public class LaunchpadControlXLExtension extends ControllerExtension
       mRemoteControls = new CursorRemoteControlsPage[NUM_TRACKS];
       mDeviceBank = new DeviceBank[NUM_TRACKS];
       mEditorRemoteControls = mHost.createCursorTrack(3, NUM_SCENES).createCursorDevice().createCursorRemoteControlsPage(8);
+      mUserControls = mHost.createUserControls(7);
       
       mCursorClip = mHost.createLauncherCursorClip(1, 1);
       mCursorClip.clipLauncherSlot().isSelected().markInterested();
@@ -127,6 +128,7 @@ public class LaunchpadControlXLExtension extends ControllerExtension
    public static SceneBank mSceneBank;
    public static TrackBank mSendBank;
    
+   public static UserControlBank mUserControls;
    public static CursorRemoteControlsPage[] mRemoteControls;
    public static DeviceBank[] mDeviceBank;
    public static DeviceBank mSendDeviceBank;

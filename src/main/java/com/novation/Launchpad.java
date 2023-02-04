@@ -24,6 +24,7 @@ public class Launchpad {
   static final RGBState STOP_QUEUED_COLOUR = RGBState.WHITE_PULSE;
   static final RGBState INACTIVE_COLOUR = RGBState.DARKGREY;
   static final RGBState PLAY_COLOUR = RGBState.WHITE;
+  static final RGBState ON_COLOUR = RGBState.WHITE;
   static final RGBState PLAY_QUEUED_COLOUR = RGBState.WHITE_BLINK;
   static final RGBState REC_COLOUR = RGBState.RED;
   static final RGBState REC_QUEUED_COLOUR = RGBState.RED_BLINK;
@@ -56,13 +57,20 @@ public class Launchpad {
   };
 
   private SettableRangedValue[] mSceneControls = {
-    mRemoteControls[8].getParameter(0).value(),
-    mRemoteControls[8].getParameter(1).value(),
-    mRemoteControls[8].getParameter(2).value(),
-    mRemoteControls[8].getParameter(3).value(),
-    mRemoteControls[8].getParameter(4).value(),
-    mRemoteControls[8].getParameter(5).value(),
-    mRemoteControls[8].getParameter(6).value()
+    mUserControls.getControl(0).value(),
+    mUserControls.getControl(1).value(),
+    mUserControls.getControl(2).value(),
+    mUserControls.getControl(3).value(),
+    mUserControls.getControl(4).value(),
+    mUserControls.getControl(5).value(),
+    mUserControls.getControl(6).value(),
+    // mRemoteControls[8].getParameter(0).value(),
+    // mRemoteControls[8].getParameter(1).value(),
+    // mRemoteControls[8].getParameter(2).value(),
+    // mRemoteControls[8].getParameter(3).value(),
+    // mRemoteControls[8].getParameter(4).value(),
+    // mRemoteControls[8].getParameter(5).value(),
+    // mRemoteControls[8].getParameter(6).value()
   };
 
   public void init() {
@@ -103,7 +111,7 @@ public class Launchpad {
           RGBState.send(mMidiOut, posToNote(NUM_SCENES, trackIdx), STOP_INACTIVE_COLOUR);
       });
       
-      slotBank.addColorObserver((idx, r, g, b) -> { updateTrackLED(trackIdx); });
+      slotBank.addColorObserver((idx, r, g, b) -> { updateColumnLED(trackIdx); });
 
       slotBank.addHasContentObserver((idx, hasContent) -> {
         RGBState slot_colour = new RGBState(slotBank.getItemAt(idx).color().get());
@@ -125,18 +133,11 @@ public class Launchpad {
         });
       }
     }
-
-    // extra 9th track controlled by the scene launch buttons
-
-    mTrackBank.getItemAt(GRID_SIZE).color().addValueObserver((r,g,b) -> {
-      updateTrackLED(GRID_SIZE);
-    });
     
     for (int i = 0; i < mSceneControls.length; i++) {
       final int idx = i;
       mSceneControls[i].addValueObserver(2, value -> {
-        RGBState track_colour = new RGBState(mTrackBank.getItemAt(GRID_SIZE).color().get());
-        setPadCCColour(SCENE_CC[idx], value > 0 ? track_colour : RGBState.OFF);
+        setPadCCColour(SCENE_CC[idx], value > 0 ? ON_COLOUR : RGBState.OFF);
       });
     }
   }
@@ -186,26 +187,23 @@ public class Launchpad {
         RGBState.send(mMidiOut, posToNote(row, trackIdx), rc_val > 0 ? PLAY_COLOUR : RGBState.OFF);
       }
     } else if (trackIdx == GRID_SIZE) {
-      // track 9 has 7 toggle remotes
       for (int i = 0; i < mSceneControls.length; i++) {
         int rc_val = (int)Math.round(mSceneControls[i].get());
-        RGBState track_colour = new RGBState(mTrackBank.getItemAt(trackIdx).color().get());
-        setPadCCColour(SCENE_CC[i], rc_val > 0 ? track_colour : RGBState.OFF);
+        setPadCCColour(SCENE_CC[i], rc_val > 0 ? ON_COLOUR : RGBState.OFF);
       }
     }
   }
 
   private void updateAllLED() {
     for (int i = 0; i < NUM_TRACKS; i++)
-      updateTrackLED(i);
+    updateColumnLED(i);
     setPadCCColour(UP_CC, INACTIVE_COLOUR);
     setPadCCColour(DOWN_CC, INACTIVE_COLOUR);
     setPadCCColour(LEFT_CC, INACTIVE_COLOUR);
     setPadCCColour(RIGHT_CC, INACTIVE_COLOUR);
   }
 
-  private void updateTrackLED(int trackIdx) {
-
+  private void updateColumnLED(int trackIdx) {
     if (trackIdx < GRID_SIZE) {
       Track track = mTrackBank.getItemAt(trackIdx);
       ClipLauncherSlotBank slotBank = track.clipLauncherSlotBank();
@@ -237,7 +235,7 @@ public class Launchpad {
         for (int i = 0; i < NUM_SCENES; i++)
           setPadCCColour(SCENE_CC[i], PLAY_COLOUR);
         setPadCCColour(SCENE_CC[5], REC_COLOUR);
-        setPadCCColour(SCENE_CC[7], PLAY_COLOUR);
+        setPadCCColour(SCENE_CC[7], ON_COLOUR);
       }
     }
     else {
@@ -266,12 +264,12 @@ public class Launchpad {
 
   private void enterShift() {
     mShift = true;
-    updateTrackLED(GRID_SIZE);
+    updateColumnLED(GRID_SIZE);
   }
 
   private void exitShift() {
     mShift = false;
-    updateTrackLED(GRID_SIZE);
+    updateColumnLED(GRID_SIZE);
   }
 
   private void processCC(int cc, int value) {
