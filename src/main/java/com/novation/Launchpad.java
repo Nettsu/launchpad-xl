@@ -64,13 +64,6 @@ public class Launchpad {
     mUserControls.getControl(4).value(),
     mUserControls.getControl(5).value(),
     mUserControls.getControl(6).value(),
-    // mRemoteControls[8].getParameter(0).value(),
-    // mRemoteControls[8].getParameter(1).value(),
-    // mRemoteControls[8].getParameter(2).value(),
-    // mRemoteControls[8].getParameter(3).value(),
-    // mRemoteControls[8].getParameter(4).value(),
-    // mRemoteControls[8].getParameter(5).value(),
-    // mRemoteControls[8].getParameter(6).value()
   };
 
   public void init() {
@@ -85,6 +78,8 @@ public class Launchpad {
 
     mSceneBank.scrollPosition().addValueObserver(value -> { updateAllLED(); });
     mTrackBank.scrollPosition().addValueObserver(value -> { updateAllLED(); });
+
+    mTransport.isPlaying().addValueObserver(val -> { updateColumnLED(GRID_SIZE); });
 
     for (int col = 0; col < GRID_SIZE; col++) {
       final int trackIdx = col;
@@ -235,6 +230,7 @@ public class Launchpad {
         for (int i = 0; i < NUM_SCENES; i++)
           setPadCCColour(SCENE_CC[i], PLAY_COLOUR);
         setPadCCColour(SCENE_CC[5], REC_COLOUR);
+        setPadCCColour(SCENE_CC[6], mTransport.isPlaying().get() ? RGBState.GREEN : RGBState.DARK_GREEN);
         setPadCCColour(SCENE_CC[7], ON_COLOUR);
       }
     }
@@ -276,20 +272,28 @@ public class Launchpad {
     // value == 0 means the button was released, not pressed
     if (value == 0) {
       if (cc == SCENE_CC[7]) exitShift();
+      else if (cc == UP_CC) {
+        mSceneUpHeld = false;
+        mSceneUpTimer = 0;
+      }
+      else if (cc == DOWN_CC) {
+        mSceneDownHeld = false;
+        mSceneDownTimer = 0;
+      }
       return;
     }
     switch (cc) {
       case UP_CC:
         mSceneBank.scrollPageBackwards();
-        // mSendBank.sceneBank().scrollPageBackwards();
         mSceneBank.getItemAt(NUM_SCENES - 1).showInEditor();
         mSceneBank.getItemAt(0).showInEditor();
+        mSceneUpHeld = true;
         return;
       case DOWN_CC:
         mSceneBank.scrollPageForwards();
-        // mSendBank.sceneBank().scrollPageForwards();
         mSceneBank.getItemAt(0).showInEditor();
         mSceneBank.getItemAt(NUM_SCENES - 1).showInEditor();
+        mSceneDownHeld = true;
         return;
       case LEFT_CC:
         mTrackBank.scrollBackwards();
@@ -309,6 +313,8 @@ public class Launchpad {
           else if (i == 5)
             for (int col = 0; col < NUM_TRACKS; col++)
               mTrackBank.getItemAt(col).stop();
+          else if (i == 6)
+            mTransport.togglePlay();
         }
         else {
           if (i == 7)

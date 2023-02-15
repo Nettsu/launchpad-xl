@@ -346,21 +346,35 @@ public class LaunchControlXL {
   }
 
   private void processCCButton(int cc, int value) {
-    switch (cc) {
-      case UP_CC:
-        mTransport.tempo().incRaw(1);
-        break;
-      case DOWN_CC:
-        mTransport.tempo().incRaw(-1);
-        break;
-      case LEFT_CC:
-        if (mDeviceMode) mEditorRemoteControls.selectNextPage(true);
-        else mSendBank.scrollBackwards();
-        break;
-      case RIGHT_CC:
-        if (mDeviceMode) mEditorRemoteControls.selectPreviousPage(true);
-        else mSendBank.scrollForwards();
-        break;
+    if (value == 127) {
+      switch (cc) {
+        case UP_CC:
+          mTransport.tempo().incRaw(1);
+          mTempoUpHeld = true;
+          break;
+        case DOWN_CC:
+          mTransport.tempo().incRaw(-1);
+          mTempoDownHeld = true;
+          break;
+        case LEFT_CC:
+          if (mDeviceMode) mEditorRemoteControls.selectNextPage(true);
+          else mSendBank.scrollBackwards();
+          break;
+        case RIGHT_CC:
+          if (mDeviceMode) mEditorRemoteControls.selectPreviousPage(true);
+          else mSendBank.scrollForwards();
+          break;
+      }
+    }
+    else {
+      switch (cc) {
+        case UP_CC:
+          mTempoUpHeld = false;
+          break;
+        case DOWN_CC:
+          mTempoDownHeld = false;
+          break;
+      }
     }
   }
 
@@ -368,7 +382,7 @@ public class LaunchControlXL {
     CCData data = getCCData(cc);
     if (data.isAnalog)
       processContinious(data.row, data.col, value);
-    else if (value == 127)
+    else
       processCCButton(cc, value);
   }
 

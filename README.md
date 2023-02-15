@@ -10,6 +10,7 @@ This is a rather quirky Launchpad Mini 3 + Launch Control XL Bitwig script that 
 - Holding the bottom right corner button (SHIFT in this script) changes the behaviour of some butttons:
   + first 5 scene buttons launch scenes
   + 6th scene button stops all tracks
+  + 7th scene button toggles play/stop
   + the remote control buttons for track 1-8 work as a toggle instead of a momentary hold
 
 ```

@@ -2,12 +2,16 @@ package com.novation;
 
 import com.bitwig.extension.controller.api.*;
 import com.bitwig.extension.controller.ControllerExtension;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class LaunchpadControlXLExtension extends ControllerExtension
 {
    static final int NUM_SCENES = 5;
    static final int NUM_TRACKS = 8;
    static final int NUM_SENDS = 8;
+   static final int HOLD_DELAY = 5;
 
    protected LaunchpadControlXLExtension(final LaunchpadControlXLExtensionDefinition definition, final ControllerHost host) {
       super(definition, host);
@@ -16,7 +20,10 @@ public class LaunchpadControlXLExtension extends ControllerExtension
    @Override
    public void init() {
       mHost = getHost();
+      
       mTransport = mHost.createTransport();
+      mTransport.isPlaying().markInterested();
+
       mTrackBank = mHost.createTrackBank(NUM_TRACKS, NUM_SENDS, NUM_SCENES);
       mSendBank = mHost.createEffectTrackBank(1, NUM_SCENES);
 
@@ -99,6 +106,39 @@ public class LaunchpadControlXLExtension extends ControllerExtension
       mLaunchControl = new LaunchControlXL();
       mLaunchControl.init();
 
+      Runnable timerRunnable = new Runnable() {
+         public void run() {
+            if (mSceneUpHeld) mSceneUpTimer++;
+            else mSceneUpTimer = 0;
+
+            if (mSceneDownHeld) mSceneDownTimer++;
+            else mSceneDownTimer = 0;
+
+            if (mTempoUpHeld) mTempoUpTimer++;
+            else mTempoUpTimer = 0;
+
+            if (mTempoDownHeld) mTempoDownTimer++;
+            else mTempoDownTimer = 0;
+
+            if (mTempoUpTimer > HOLD_DELAY) mTransport.tempo().incRaw(1);
+            if (mTempoDownTimer > HOLD_DELAY) mTransport.tempo().incRaw(-1);
+
+            if (mSceneUpTimer > HOLD_DELAY) {
+               mSceneBank.scrollPageBackwards();
+               mSceneBank.getItemAt(NUM_SCENES - 1).showInEditor();
+               mSceneBank.getItemAt(0).showInEditor();
+            }
+            if (mSceneDownTimer > HOLD_DELAY) {
+               mSceneBank.scrollPageForwards();
+               mSceneBank.getItemAt(0).showInEditor();
+               mSceneBank.getItemAt(NUM_SCENES - 1).showInEditor();
+            }
+         }
+      };
+     
+      ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+      executor.scheduleAtFixedRate(timerRunnable, 0, 100, TimeUnit.MILLISECONDS);
+
       mHost.showPopupNotification("Launchpad Control XL Initialized");
    }
 
@@ -135,6 +175,16 @@ public class LaunchpadControlXLExtension extends ControllerExtension
    public static CursorRemoteControlsPage mEditorRemoteControls;
    public static CursorRemoteControlsPage mSendRemoteControls;
    public static Clip mCursorClip;
+
+   public static boolean mSceneUpHeld = false;
+   public static int mSceneUpTimer = 0;
+   public static boolean mSceneDownHeld = false;
+   public static int mSceneDownTimer = 0;
+
+   public static boolean mTempoUpHeld = false;
+   public static int mTempoUpTimer = 0;
+   public static boolean mTempoDownHeld = false;
+   public static int mTempoDownTimer = 0;
 
    public static boolean mShift;
 }
