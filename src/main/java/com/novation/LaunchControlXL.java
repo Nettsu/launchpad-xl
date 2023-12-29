@@ -84,7 +84,7 @@ public class LaunchControlXL {
       mTrackBank.getItemAt(4).sendBank().getItemAt(0).value(),
       mTrackBank.getItemAt(5).sendBank().getItemAt(0).value(),
       mTrackBank.getItemAt(6).sendBank().getItemAt(0).value(),
-      mSendRemoteControls.getParameter(2).value()
+      mSendRemoteControls.getParameter(0).value()
     },
     // second row (Send B)
     {
@@ -92,7 +92,7 @@ public class LaunchControlXL {
       mTrackBank.getItemAt(1).sendBank().getItemAt(1).value(),
       mTrackBank.getItemAt(2).sendBank().getItemAt(1).value(),
       mTrackBank.getItemAt(3).sendBank().getItemAt(1).value(),
-      mRemoteControls[4].getParameter(1).value(),
+      mTrackBank.getItemAt(4).sendBank().getItemAt(1).value(),
       mTrackBank.getItemAt(5).sendBank().getItemAt(1).value(),
       mTrackBank.getItemAt(6).sendBank().getItemAt(1).value(),
       mSendRemoteControls.getParameter(1).value()
@@ -106,7 +106,7 @@ public class LaunchControlXL {
       mRemoteControls[4].getParameter(0).value(),
       mRemoteControls[5].getParameter(0).value(),
       mRemoteControls[6].getParameter(0).value(),
-      mSendRemoteControls.getParameter(0).value()
+      mSendRemoteControls.getParameter(2).value()
     },
   };
 

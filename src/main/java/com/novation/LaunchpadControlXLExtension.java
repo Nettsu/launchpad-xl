@@ -42,9 +42,8 @@ public class LaunchpadControlXLExtension extends ControllerExtension
       mControlMidiOut = mHost.getMidiOutPort(1);
 
       mRemoteControls = new CursorRemoteControlsPage[NUM_TRACKS];
-      mDeviceBank = new DeviceBank[NUM_TRACKS];
       mEditorRemoteControls = mHost.createCursorTrack(3, NUM_SCENES).createCursorDevice().createCursorRemoteControlsPage(8);
-      mUserControls = mHost.createUserControls(7);
+      mMasterRemotes = mHost.createMasterTrack(0).createCursorRemoteControlsPage(8);
       
       mCursorClip = mHost.createLauncherCursorClip(1, 1);
       mCursorClip.clipLauncherSlot().isSelected().markInterested();
@@ -53,11 +52,7 @@ public class LaunchpadControlXLExtension extends ControllerExtension
             mSceneBank.scrollPosition().set((idx / NUM_SCENES) * NUM_SCENES);
       });
 
-      mSendDeviceBank = mSendBank.getItemAt(0).createDeviceBank(1);
-      mSendDeviceBank.getDevice(0).position().addValueObserver(pos -> {
-         mSendDeviceBank.scrollIntoView(0);
-      });
-      mSendRemoteControls = mSendDeviceBank.getDevice(0).createCursorRemoteControlsPage(8);
+      mSendRemoteControls = mSendBank.getItemAt(0).createCursorRemoteControlsPage(8);
 
       for (int i = 0; i < 8; i++) {
          mSendRemoteControls.getParameter(i).markInterested();
@@ -67,12 +62,7 @@ public class LaunchpadControlXLExtension extends ControllerExtension
       for (int col = 0; col < NUM_TRACKS; col++) {
          final int trackIdx = col;
          final Track track = mTrackBank.getItemAt(trackIdx);
-         
-         mDeviceBank[col] = track.createDeviceBank(1);
-         mDeviceBank[col].getDevice(0).position().addValueObserver(pos -> { 
-            mDeviceBank[trackIdx].scrollIntoView(0);
-         });
-         mRemoteControls[col] = mDeviceBank[col].getDevice(0).createCursorRemoteControlsPage(8);
+         mRemoteControls[col] = track.createCursorRemoteControlsPage(8);
 
          for (int i = 0; i < 8; i++) mRemoteControls[col].getParameter(i).markInterested();
          for (int i = 0; i < NUM_SENDS; i++) track.sendBank().getItemAt(i).markInterested();
@@ -168,10 +158,8 @@ public class LaunchpadControlXLExtension extends ControllerExtension
    public static SceneBank mSceneBank;
    public static TrackBank mSendBank;
    
-   public static UserControlBank mUserControls;
+   public static CursorRemoteControlsPage mMasterRemotes;
    public static CursorRemoteControlsPage[] mRemoteControls;
-   public static DeviceBank[] mDeviceBank;
-   public static DeviceBank mSendDeviceBank;
    public static CursorRemoteControlsPage mEditorRemoteControls;
    public static CursorRemoteControlsPage mSendRemoteControls;
    public static Clip mCursorClip;

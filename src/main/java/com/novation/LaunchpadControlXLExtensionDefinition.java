@@ -44,7 +44,7 @@ public class LaunchpadControlXLExtensionDefinition extends ControllerExtensionDe
 
    @Override
    public int getRequiredAPIVersion() {
-      return 17;
+      return 18;
    }
 
    @Override
